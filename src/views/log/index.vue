@@ -74,72 +74,42 @@
       class="table-container"
       highlight-current-row
     >
-      <el-table-column
-        align="center"
-        label="ID"
-        width="95"
-      >
+      <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="行为描述"
-      >
+      <el-table-column label="行为描述">
         <template slot-scope="scope">
           {{ scope.row.title }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="日志级别"
-        width="120"
-        align="center"
-      >
+      <el-table-column label="日志级别" width="120" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.level | levelFilter">{{ scope.row.level }}</el-tag>
+          <el-tag :type="scope.row.level | levelFilter">{{
+            scope.row.level
+          }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        label="请求方法"
-        width="100"
-        align="center"
-      >
+      <el-table-column label="请求方法" width="100" align="center">
         <template slot-scope="scope">
           {{ scope.row.method }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="响应时间"
-        width="100"
-        align="center"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.time }} ms
-        </template>
+      <el-table-column label="响应时间" width="100" align="center">
+        <template slot-scope="scope"> {{ scope.row.time }} ms </template>
       </el-table-column>
-      <el-table-column
-        label="IP地址"
-        width="130"
-        align="center"
-      >
+      <el-table-column label="IP地址" width="130" align="center">
         <template slot-scope="scope">
           {{ scope.row.ip }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作人"
-        width="100"
-        align="center"
-      >
+      <el-table-column label="操作人" width="100" align="center">
         <template slot-scope="scope">
           {{ scope.row.author }}
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="操作时间"
-        width="160"
-      >
+      <el-table-column align="center" label="操作时间" width="160">
         <template slot-scope="scope">
           <span>{{ scope.row.created_at }}</span>
         </template>
@@ -167,10 +137,10 @@ export default {
   filters: {
     levelFilter(level) {
       const levelMap = {
-        'DEBUG': 'success',
-        'INFO': '',
-        'WARNING': 'warning',
-        'ERROR': 'danger'
+        DEBUG: 'success',
+        INFO: '',
+        WARNING: 'warning',
+        ERROR: 'danger'
       }
       return levelMap[level]
     }
@@ -212,7 +182,7 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
+      getList(this.listQuery).then((response) => {
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false
