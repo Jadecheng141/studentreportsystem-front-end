@@ -12,8 +12,8 @@ const routes = [
     path: '/',
     name: 'home',
     children: [{
-      path: 'dashboard',
-      name: 'dashboard'
+      path: 'thefirstpage',
+      name: 'thefirstpage'
     }]
   },
   {

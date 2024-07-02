@@ -3,14 +3,14 @@ const routes = [
   {
     path: '/',
     component: 'Layout',
-    redirect: '/dashboard',
+    redirect: '/thefirstpage',
     name: 'Home',
     alwaysShow: true,
     children: [{
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: 'views/dashboard/index',
-      meta: { title: '首页', icon: 'dashboard' }
+      path: '/thefirstpage',
+      name: 'Thefirstpage',
+      component: 'views/thefirstpage/index',
+      meta: { title: '首页', icon: 'thefirstpage' }
     }]
   },
 

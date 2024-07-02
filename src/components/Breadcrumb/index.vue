@@ -32,18 +32,18 @@ export default {
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
-      if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: '首页' }}].concat(matched)
+      if (!this.isThefirstpage(first)) {
+        matched = [{ path: '/thefirstpage', meta: { title: '首页' }}].concat(matched)
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },
-    isDashboard(route) {
+    isThefirstpage(route) {
       const path = route && route.path
       if (!path) {
         return false
       }
-      return path.trim().toLocaleLowerCase() === '/dashboard'.toLocaleLowerCase()
+      return path.trim().toLocaleLowerCase() === '/thefirstpage'.toLocaleLowerCase()
     },
     pathCompile(path) {
       // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
