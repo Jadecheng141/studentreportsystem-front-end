@@ -5,7 +5,7 @@ const list = [
     status: 1,
     path: '/ads',
     name: 'Ads',
-    title: '广告管理',
+    title: '学校信息',
     icon: 'el-icon-help',
     children: [{
       id: 2,
@@ -13,73 +13,42 @@ const list = [
       status: 1,
       path: '/ads/banner',
       name: 'Banner',
-      title: '广告管理'
+      title: '学校简介'
     }, {
       id: 3,
       sort: 1,
       status: 1,
       path: '/ads/link',
       name: 'Link',
-      title: '友情链接'
-    }]
-  },
-  {
-    id: 4,
-    sort: 1,
-    status: 1,
-    path: '/article',
-    name: 'Article',
-    title: '文章管理',
-    icon: 'el-icon-document',
-    children: [
-      {
-        id: 5,
-        sort: 1,
-        status: 1,
-        path: '/articlelist',
-        name: 'ArticleList',
-        title: '文章管理'
-      },
-      {
-        id: 6,
-        sort: 1,
-        status: 1,
-        path: '/articlecategory',
-        name: 'ArticleCategory',
-        title: '文章分类'
-      }
+      title: '师资力量'
+    }, {
+      id: 4,
+      sort: 1,
+      status: 1,
+      path: '/ads/leader',
+      name: 'Leader',
+      title: '历任领导'
+    }, {
+      id: 5,
+      sort: 1,
+      status: 1,
+      path: '/ads/history',
+      name: 'History',
+      title: '历史名人'
+    }
     ]
   },
   {
-    id: 7,
-    sort: 1,
-    status: 1,
-    path: '/data',
-    name: 'Data',
-    title: '数据统计',
-    icon: 'el-icon-s-data',
-    children: [
-      {
-        id: 8,
-        sort: 1,
-        status: 1,
-        path: '/data/article',
-        name: 'Article',
-        title: '文章统计'
-      }
-    ]
-  },
-  {
-    id: 9,
+    id: 6,
     sort: 1,
     status: 1,
     path: '/nested',
     name: 'Nested',
-    title: '多级菜单',
+    title: '我的宿舍',
     icon: 'el-icon-s-operation',
     children: [
       {
-        id: 10,
+        id: 7,
         sort: 1,
         status: 1,
         path: '/nested/menu1',
@@ -87,7 +56,7 @@ const list = [
         title: '二级菜单',
         children: [
           {
-            id: 11,
+            id: 8,
             sort: 1,
             status: 1,
             path: '/nested/menu1/menu1-1',
@@ -95,7 +64,7 @@ const list = [
             title: '三级菜单'
           },
           {
-            id: 12,
+            id: 9,
             sort: 1,
             status: 1,
             path: '/nested/menu1/menu1-2',
@@ -103,7 +72,7 @@ const list = [
             title: '三级菜单',
             children: [
               {
-                id: 13,
+                id: 10,
                 sort: 1,
                 status: 1,
                 path: '/nested/menu1/menu1-2/menu1-2-1',
@@ -111,7 +80,7 @@ const list = [
                 title: '四级菜单'
               },
               {
-                id: 14,
+                id: 11,
                 sort: 1,
                 status: 1,
                 path: '/nested/menu1/menu1-2/menu1-2-2',
@@ -121,7 +90,7 @@ const list = [
             ]
           },
           {
-            id: 15,
+            id: 12,
             sort: 1,
             status: 1,
             path: '/nested/menu1/menu1-3',
@@ -131,7 +100,7 @@ const list = [
         ]
       },
       {
-        id: 16,
+        id: 13,
         sort: 1,
         status: 1,
         path: '/nested/menu2',
@@ -141,7 +110,7 @@ const list = [
     ]
   },
   {
-    id: 17,
+    id: 14,
     sort: 1,
     status: 1,
     path: '/site',
@@ -149,73 +118,48 @@ const list = [
     title: '基础设置',
     children: [
       {
-        id: 18,
+        id: 15,
         sort: 1,
         status: 1,
         path: '/site/index',
         name: 'SiteSet',
-        title: '站点设置',
+        title: '我的校园卡',
         icon: 'el-icon-setting'
       }
     ]
   },
   {
-    id: 19,
+    id: 16,
     sort: 1,
     status: 1,
     path: '/setting',
     name: 'Setting',
-    title: '系统管理',
+    title: '我的课程',
     icon: 'el-icon-s-tools',
     children: [
       {
-        id: 20,
+        id: 17,
         sort: 1,
         status: 1,
         path: '/setting/user',
         name: 'User',
-        title: '用户管理'
+        title: '课程查询'
       },
       {
-        id: 21,
+        id: 18,
         sort: 1,
         status: 1,
         path: '/setting/role',
         name: 'Role',
-        title: '角色管理'
+        title: '课程选择'
       },
       {
-        id: 22,
+        id: 19,
         sort: 1,
         status: 1,
         path: '/setting/menu',
         name: 'Menu',
-        title: '菜单管理'
-      },
-      {
-        id: 23,
-        sort: 1,
-        status: 1,
-        path: '/setting/log',
-        name: 'Log',
-        title: '日志管理'
-      }
-    ]
-  },
-  {
-    id: 24,
-    sort: 1,
-    status: 1,
-    path: 'external-link',
-    title: '外链',
-    children: [
-      {
-        id: 25,
-        sort: 1,
-        status: 1,
-        path: 'https://panjiachen.gitee.io/vue-element-admin-site/zh/',
-        title: '文档',
-        icon: 'el-icon-link'
+        title: '我的课表'
       }
     ]
   }

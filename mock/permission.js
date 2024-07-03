@@ -19,57 +19,31 @@ const routes = [
     component: 'Layout',
     redirect: '/ads/banner',
     name: 'Ads',
-    meta: { title: '广告管理', icon: 'el-icon-help' },
+    meta: { title: '学校信息', icon: 'el-icon-help' },
     children: [
       {
         path: '/ads/banner',
         name: 'Banner',
         component: 'views/banner/index',
-        meta: { title: '轮播图' }
+        meta: { title: '学校简介' }
       },
       {
         path: '/ads/link',
         name: 'Link',
         component: 'views/link/index',
-        meta: { title: '友情链接' }
-      }
-    ]
-  },
-
-  {
-    path: '/article',
-    component: 'Layout',
-    redirect: '/article/list',
-    name: 'Article',
-    meta: { title: '文章管理', icon: 'el-icon-document' },
-    children: [
-      {
-        path: '/article/list',
-        name: 'ArticleList',
-        component: 'views/article/index',
-        meta: { title: '文章管理' }
+        meta: { title: '师资力量' }
       },
       {
-        path: '/article/category',
-        name: 'ArticleCategory',
-        component: 'views/article/category',
-        meta: { title: '文章分类' }
-      }
-    ]
-  },
-
-  {
-    path: '/data',
-    component: 'Layout',
-    redirect: '/data/article',
-    name: 'Data',
-    meta: { title: '数据统计', icon: 'el-icon-s-data' },
-    children: [
+        path: '/ads/leader',
+        name: 'Leader',
+        component: 'views/leader/leader',
+        meta: { title: '历任领导' }
+      },
       {
-        path: '/data/article',
-        name: 'Article',
-        component: 'views/data/index',
-        meta: { title: '文章统计' }
+        path: '/ads/history',
+        name: 'History',
+        component: 'views/history/history',
+        meta: { title: '历史名人' }
       }
     ]
   },
@@ -80,7 +54,7 @@ const routes = [
     redirect: '/nested/menu1',
     name: 'Nested',
     meta: {
-      title: '多级菜单',
+      title: '我的宿舍',
       icon: 'el-icon-s-operation'
     },
     children: [
@@ -146,7 +120,7 @@ const routes = [
         path: '/site/index',
         name: 'Site',
         component: 'views/site/index',
-        meta: { title: '站点设置', icon: 'el-icon-setting' }
+        meta: { title: '我的校园卡', icon: 'el-icon-setting' }
       }
     ]
   },
@@ -156,43 +130,25 @@ const routes = [
     component: 'Layout',
     redirect: '/setting/user',
     name: 'Setting',
-    meta: { title: '系统管理', icon: 'el-icon-s-tools' },
+    meta: { title: '我的课程', icon: 'el-icon-s-tools' },
     children: [
       {
         path: '/setting/user',
         name: 'User',
         component: 'views/user/index',
-        meta: { title: '用户管理' }
+        meta: { title: '课程查询' }
       },
       {
         path: '/setting/role',
         name: 'Role',
         component: 'views/role/index',
-        meta: { title: '角色管理' }
+        meta: { title: '课程选择' }
       },
       {
         path: '/setting/menu',
         name: 'Menu',
         component: 'views/menu/index',
-        meta: { title: '菜单管理' }
-      },
-      {
-        path: '/setting/log',
-        name: 'Log',
-        component: 'views/log/index',
-        meta: { title: '日志管理' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: 'Layout',
-    alwaysShow: true,
-    children: [
-      {
-        path: 'https://panjiachen.gitee.io/vue-element-admin-site/zh/',
-        meta: { title: '文档', icon: 'el-icon-link' }
+        meta: { title: '我的课表' }
       }
     ]
   }
