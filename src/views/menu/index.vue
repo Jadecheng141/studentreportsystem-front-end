@@ -24,52 +24,34 @@
       :data="list"
       row-key="id"
       default-expand-all
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
-      <el-table-column
-        fixed
-        label="ID"
-        width="120"
-      >
+      <el-table-column fixed label="ID" width="120">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="排序"
-        width="80"
-      >
+      <el-table-column align="center" label="排序" width="80">
         <template slot-scope="scope">{{ scope.row.sort }}</template>
       </el-table-column>
-      <el-table-column
-        label="菜单名称"
-      >
+      <el-table-column label="菜单名称">
         <template slot-scope="scope">{{ scope.row.title }}</template>
       </el-table-column>
-      <el-table-column
-        label="菜单标识"
-      >
+      <el-table-column label="菜单标识">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>
-      <el-table-column
-        label="菜单路径"
-      >
+      <el-table-column label="菜单路径">
         <template slot-scope="scope">{{ scope.row.path }}</template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="状态"
-        width="100"
-      >
+      <el-table-column align="center" label="状态" width="100">
         <template slot-scope="scope">
-          <el-switch :value="scope.row.status" :active-value="1" :inactive-value="0" @change="handleUpdateStatus(scope)" />
+          <el-switch
+            :value="scope.row.status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="handleUpdateStatus(scope)"
+          />
         </template>
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        align="center"
-        label="操作"
-        width="270"
-      >
+      <el-table-column fixed="right" align="center" label="操作" width="270">
         <template slot-scope="scope">
           <el-button-group>
             <el-button
@@ -118,7 +100,13 @@
           <el-cascader
             v-model="temp.pid"
             :options="parents"
-            :props="{ checkStrictly: true, emitPath: false, expandTrigger: 'hover', value: 'id', label: 'title' }"
+            :props="{
+              checkStrictly: true,
+              emitPath: false,
+              expandTrigger: 'hover',
+              value: 'id',
+              label: 'title'
+            }"
             :show-all-levels="false"
             clearable
           />
@@ -146,12 +134,9 @@
         <el-button type="danger" @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="submit">
-          确定
-        </el-button>
+        <el-button type="primary" @click="submit"> 确定 </el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -169,7 +154,6 @@ const _temp = {
 }
 
 export default {
-
   data() {
     return {
       filterText: '',
@@ -192,12 +176,18 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
+      getList().then((response) => {
+        console.log('返回menu数据：', response.data.list)
         this.list = response.data.list
-        this.parents = [...[{
-          id: '',
-          title: '根目录'
-        }], ...response.data.list]
+        this.parents = [
+          ...[
+            {
+              id: '',
+              title: '根目录'
+            }
+          ],
+          ...response.data.list
+        ]
         this.listLoading = false
       })
     },

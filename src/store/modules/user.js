@@ -1,10 +1,8 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout } from '@/api/user'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
     name: '',
     avatar: '',
     roles: []
@@ -16,9 +14,6 @@ const state = getDefaultState()
 const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
-  },
-  SET_TOKEN: (state, token) => {
-    state.token = token
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -34,38 +29,27 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
+    console.log('执行登录')
     const { username, password } = userInfo
+    // 创建一个 URLSearchParams 对象来处理数据
+    const requestData = new URLSearchParams()
+    requestData.append('username', username.trim())
+    requestData.append('password', password)
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          return reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar, roles } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_ROLES', roles)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
+      login(requestData)
+        .then((response) => {
+          console.log('response:', response)
+          if (response.status === 200) {
+            commit('SET_NAME', response.name)
+            commit('SET_ROLES', response.role)
+            resolve(response)
+          } else {
+            return reject('Verification failed, please Login again.')
+          }
+        })
+        .catch((error) => {
+          reject(error)
+        })
     })
   },
 
@@ -73,7 +57,6 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
-        removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
         resolve()
@@ -81,16 +64,8 @@ const actions = {
         reject(error)
       })
     })
-  },
-
-  // remove token
-  resetToken({ commit }) {
-    return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
-    })
   }
+
 }
 
 export default {
