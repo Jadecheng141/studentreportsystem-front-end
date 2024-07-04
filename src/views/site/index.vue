@@ -1,161 +1,126 @@
 <template>
-  <div class="app-container">
-    <el-form
-      ref="dataForm"
-      v-loading="listLoading"
-      :model="temp"
-      label-width="120px"
-      :label-position="labelObj"
-    >
-      <div class="form-container">
-        <div class="form-container-body">
-          <el-row>
-            <el-col :md="18" :lg="18" :xl="18">
-              <el-form-item label="关闭站点">
-                <el-radio-group v-model="temp.is_close">
-                  <el-radio :label="0">开启</el-radio>
-                  <el-radio :label="1">关闭</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="开启验证码">
-                <el-radio-group v-model="temp.enable_captcha">
-                  <el-radio :label="1">开启</el-radio>
-                  <el-radio :label="0">关闭</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="站点名称" prop="site_name">
-                <el-input v-model="temp.site_name" placeholder="请输入站点名称" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="站点logo">
-                <el-upload
-                  class="avatar-uploader"
-                  :action="uploadUrl"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload"
-                >
-                  <img v-if="temp.site_logo" :src="temp.site_logo" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon" />
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="SEO关键词">
-                <el-input v-model="temp.keywords" placeholder="请输入SEO关键词" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="SEO描述">
-                <el-input v-model="temp.description" placeholder="请输入SEO描述" type="textarea" />
-              </el-form-item>
-              <el-form-item label="版权所有">
-                <el-input v-model="temp.copyright" placeholder="请输入版权所有" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="公司名称">
-                <el-input v-model="temp.company" placeholder="请输入公司名称" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="联系人">
-                <el-input v-model="temp.contact" placeholder="请输入联系人" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-user" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="联系QQ">
-                <el-input v-model="temp.qq" placeholder="请输入联系电话" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-phone-outline" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="电子邮件">
-                <el-input v-model="temp.email" placeholder="请输入电子邮件" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-document-copy" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="联系地址">
-                <el-input v-model="temp.address" placeholder="请输入联系地址" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-location" />
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="form-container-footer">
-          <el-button type="primary" size="small" @click="submit">提交</el-button>
+  <div class="container">
+    <div class="rectangle">
+      <div class="total">
+      <div>
+      <div class="top">
+      <img :src="logo" alt="静态图片" class="logo" >
+      <h3 class="tet">某某大学</h3>
+      </div>
+      <img :src="imageUrl" alt="人像" class="image-container2">
+      </div>
+        <div class="white-rectangle">
+          <el-form ref="form" :model="form" label-width="80px" class="showw">
+            <el-form-item label="姓名:">
+              <div class="groundandbuilding2"></div>
+            </el-form-item>
+            <el-form-item label="学院:">
+              <div class="groundandbuilding2"></div>
+            </el-form-item>
+            <el-form-item label="学号:">
+              <div class="groundandbuilding2"></div>
+            </el-form-item>
+          </el-form>
         </div>
       </div>
-    </el-form>
+    </div>
   </div>
 </template>
 
 <script>
-
-const _temp = {
-  is_close: 0,
-  enable_captcha: 0,
-  site_name: '逐影未来',
-  site_logo: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/146/h/146',
-  keywords: '逐影未来',
-  description: '逐影未来',
-  copyright: '逐影未来',
-  contact: '逐影未来',
-  qq: '2264535745',
-  email: '2264535745@qq.com',
-  company: '逐影未来',
-  address: ''
-}
-
 export default {
+  name: 'RectangleWithShadow',
   data() {
     return {
-      listLoading: false,
-      loading: false,
-      uploadUrl: '',
-      temp: Object.assign({}, _temp)
+      logo:require('@/images/logo.png'),
+      tableData: [
+        { pay: '这是一条消费记录1' },
+        { pay: '这是一条消费记录2' },
+        { pay: '这是一条消费记录3' },
+        { pay: '这是一条消费记录4' }
+      ],
+      imageUrl: '' // 存储图片URL
     }
-  },
-  computed: {
-    labelObj() {
-      return this.$store.state.app.device === 'mobile' ? 'top' : 'right'
-    }
-  },
-  created() {
-    this.getInfo()
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.temp.site_logo = URL.createObjectURL(file.raw)
+    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        return [1, 1];
+      }
     },
-    beforeAvatarUpload(file) {
-      if (!this.uploadUrl) {
-        this.$message.error('请设置正确的图片上传地址!')
-        return false
+    async fetchImage() {
+      try {
+        const response = await axios.get('your-image-api-endpoint'); // 替换为您的图片API端点
+        this.imageUrl = response.data.imageUrl; // 根据实际返回的数据结构获取图片URL
+      } catch (error) {
+        console.error('Failed to fetch image:', error);
       }
-      const isJPG = file.type === 'image/*'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isJPG) {
-        this.$message.error('只能上传图片格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    getInfo() {
-      if (this.listLoading) {
-        return false
-      }
-      this.listLoading = true
-      setTimeout(() => {
-        this.listLoading = false
-      }, 100)
-    },
-    submit() {
-      if (this.loading) {
-        return
-      }
-      this.loading = true
-      setTimeout(() => {
-        this.$message({
-          message: '提交成功',
-          type: 'success'
-        })
-        this.loading = false
-      }, 300)
     }
+  },
+  mounted() {
+    this.fetchImage(); // 获取图片数据
   }
-}
+};
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中 */
+  justify-content: center; /* 垂直居中 */
+  height: 100vh; /* 设置容器的高度为视口高度 */
+}
+
+.rectangle {
+  margin-top: 20px;
+  width: 800px; /* 设置矩形的宽度 */
+  height: 400px; /* 设置矩形的高度 */
+  background-color: dodgerblue; /* 设置矩形的背景颜色 */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* 设置矩形的阴影 */
+  border-radius: 15px; /* 设置矩形的圆角 */
+  margin-bottom: 20px; /* 添加底部外边距以分隔矩形和表格 */
+}
+.white-rectangle{
+  margin-top: 20px;
+  width: 360px; /* 设置矩形的宽度 */
+  height: 360px; /* 设置矩形的高度 */
+  background-color: white; /* 设置矩形的背景颜色 */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* 设置矩形的阴影 */
+  border-radius: 15px; /* 设置矩形的圆角 */
+  margin-bottom: 20px; /* 添加底部外边距以分隔矩形和表格 */
+  margin-left: 140px;
+}
+.top{
+  display: flex;
+  margin-top: 30px;
+}
+.tt {
+  margin-left: 90px;
+}
+.logo{
+  width:100px;
+  height:95px;
+  margin-left: 20px;
+}
+.tet{
+  font-size: 30px;
+  margin-top: 27px;
+  color: white;
+  margin-left: 20px;
+}
+.image-container2{
+  margin-top: 80px;
+  margin-left:160px;
+}
+.total{
+  display: flex;
+}
+.showw{
+  margin-top:80px;
+  left:200px;
+}
+.groundandbuilding2{
+  width:320px;
+}
+</style>

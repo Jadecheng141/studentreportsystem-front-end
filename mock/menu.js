@@ -45,72 +45,20 @@ const list = [
     path: '/nested',
     name: 'Nested',
     title: '我的宿舍',
-    icon: 'el-icon-s-operation',
-    children: [
+    children:[
       {
         id: 7,
         sort: 1,
         status: 1,
-        path: '/nested/menu1',
-        name: 'Menu1',
-        title: '二级菜单',
-        children: [
-          {
-            id: 8,
-            sort: 1,
-            status: 1,
-            path: '/nested/menu1/menu1-1',
-            name: 'Menu1-1',
-            title: '三级菜单'
-          },
-          {
-            id: 9,
-            sort: 1,
-            status: 1,
-            path: '/nested/menu1/menu1-2',
-            name: 'Menu1-2',
-            title: '三级菜单',
-            children: [
-              {
-                id: 10,
-                sort: 1,
-                status: 1,
-                path: '/nested/menu1/menu1-2/menu1-2-1',
-                name: 'Menu1-2-1',
-                title: '四级菜单'
-              },
-              {
-                id: 11,
-                sort: 1,
-                status: 1,
-                path: '/nested/menu1/menu1-2/menu1-2-2',
-                name: 'Menu1-2-2',
-                title: '四级菜单'
-              }
-            ]
-          },
-          {
-            id: 12,
-            sort: 1,
-            status: 1,
-            path: '/nested/menu1/menu1-3',
-            name: 'Menu1-3',
-            title: '三级菜单'
-          }
-        ]
-      },
-      {
-        id: 13,
-        sort: 1,
-        status: 1,
-        path: '/nested/menu2',
-        name: 'Menu2',
-        title: '二级菜单'
+        path: '/nested/domitory',
+        name: 'Nestedset',
+        title: '我的宿舍',
+        icon: 'el-icon-s-operation'
       }
     ]
   },
   {
-    id: 14,
+    id: 8,
     sort: 1,
     status: 1,
     path: '/site',
@@ -118,7 +66,7 @@ const list = [
     title: '基础设置',
     children: [
       {
-        id: 15,
+        id: 9,
         sort: 1,
         status: 1,
         path: '/site/index',
@@ -129,7 +77,7 @@ const list = [
     ]
   },
   {
-    id: 16,
+    id: 10,
     sort: 1,
     status: 1,
     path: '/setting',
@@ -138,7 +86,7 @@ const list = [
     icon: 'el-icon-s-tools',
     children: [
       {
-        id: 17,
+        id: 11,
         sort: 1,
         status: 1,
         path: '/setting/user',
@@ -146,7 +94,7 @@ const list = [
         title: '课程查询'
       },
       {
-        id: 18,
+        id: 12,
         sort: 1,
         status: 1,
         path: '/setting/role',
@@ -154,7 +102,7 @@ const list = [
         title: '课程选择'
       },
       {
-        id: 19,
+        id: 13,
         sort: 1,
         status: 1,
         path: '/setting/menu',

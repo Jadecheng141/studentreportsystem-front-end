@@ -48,7 +48,7 @@ const routes = [
     ]
   },
 
-  {
+  /* {
     path: '/nested',
     component: 'Layout',
     redirect: '/nested/menu1',
@@ -109,8 +109,20 @@ const routes = [
         meta: { title: '二级菜单' }
       }
     ]
+  }, */
+  {
+    path: '/nested',
+    component: 'Layout',
+    alwaysShow: true,
+    children: [
+      {
+        path: '/nested/domitory',
+        name: 'Domitory',
+        component: 'views/nested/domitory',
+        meta: { title: '我的宿舍', icon: 'el-icon-s-operation' }
+      }
+    ]
   },
-
   {
     path: '/site',
     component: 'Layout',
@@ -120,7 +132,7 @@ const routes = [
         path: '/site/index',
         name: 'Site',
         component: 'views/site/index',
-        meta: { title: '我的校园卡', icon: 'el-icon-setting' }
+        meta: { title: '在线咨询', icon: 'el-icon-setting' }
       }
     ]
   },
