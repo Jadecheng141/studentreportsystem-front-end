@@ -13,7 +13,28 @@ const routes = [
       meta: { title: '首页', icon: 'thefirstpage' }
     }]
   },
-
+  {
+      path: '/b',
+      component: 'Layout',
+      redirect: '/b/baodao',
+      name: 'B',
+      alwaysShow:true,
+      meta: { title: '报道信息', icon: 'el-icon-help' },
+      children: [
+        {
+          path: '/b/baodao',
+          name: 'Baodao',
+          component: 'views/information/information',
+          meta: { title: '基本信息' }
+        },
+        {
+          path: '/b/domitorydecide',
+          name: 'Domitorydecide',
+          component: 'views/domitorydecide/dode',
+          meta: { title: '宿舍确认' }
+        }
+      ]
+    },
   {
     path: '/ads',
     component: 'Layout',
@@ -47,7 +68,6 @@ const routes = [
       }
     ]
   },
-
   /* {
     path: '/nested',
     component: 'Layout',

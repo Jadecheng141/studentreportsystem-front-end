@@ -1,126 +1,285 @@
 <template>
-  <div class="container">
-    <div class="rectangle">
-      <div class="total">
-      <div>
-      <div class="top">
-      <img :src="logo" alt="静态图片" class="logo" >
-      <h3 class="tet">某某大学</h3>
-      </div>
-      <img :src="imageUrl" alt="人像" class="image-container2">
-      </div>
-        <div class="white-rectangle">
-          <el-form ref="form" :model="form" label-width="80px" class="showw">
-            <el-form-item label="姓名:">
-              <div class="groundandbuilding2"></div>
-            </el-form-item>
-            <el-form-item label="学院:">
-              <div class="groundandbuilding2"></div>
-            </el-form-item>
-            <el-form-item label="学号:">
-              <div class="groundandbuilding2"></div>
-            </el-form-item>
-          </el-form>
+  <div class="online-consultation">
+    <el-container>
+      <el-main class="chat-window">
+        <div class="messages">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="{
+              message: true,
+              'user-message': message.isUser,
+              'system-message': message.isSystem,
+            }"
+          >
+            {{ message.content }}
+          </div>
         </div>
-      </div>
-    </div>
+      </el-main>
+
+
+      <el-footer class="input-area">
+        <el-input
+          type="textarea"
+          v-model="newMessage"
+          placeholder="请输入您的问题..."
+          @keyup.enter.native="sendMessage"
+        />
+        <el-button type="primary" @click="sendMessage">发送</el-button>
+      </el-footer>
+    </el-container>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'RectangleWithShadow',
   data() {
     return {
-      logo:require('@/images/logo.png'),
-      tableData: [
-        { pay: '这是一条消费记录1' },
-        { pay: '这是一条消费记录2' },
-        { pay: '这是一条消费记录3' },
-        { pay: '这是一条消费记录4' }
-      ],
-      imageUrl: '' // 存储图片URL
-    }
+      messages: [
+        { content: '欢迎！请输入1、2或3以获取不同的回复。', isUser: false, isSystem: true },
+      ], // 存储消息列表
+      newMessage: '', // 存储新消息内容
+    };
   },
   methods: {
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0) {
-        return [1, 1];
+    sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        // 将新消息添加到消息列表中
+        this.messages.push({
+          content: this.newMessage,
+          isUser: true,
+          isSystem: false,
+        });
+
+        // 模拟接收客服回复
+        setTimeout(() => {
+          const reply = this.getReply(this.newMessage);
+          this.messages.push({
+            content: reply,
+            isUser: false,
+            isSystem: false,
+          });
+        }, 1000);
+
+        // 清空输入框
+        this.newMessage = '';
       }
     },
-    async fetchImage() {
-      try {
-        const response = await axios.get('your-image-api-endpoint'); // 替换为您的图片API端点
-        this.imageUrl = response.data.imageUrl; // 根据实际返回的数据结构获取图片URL
-      } catch (error) {
-        console.error('Failed to fetch image:', error);
+    getReply(message) {
+      switch (message) {
+        case "1":
+          return '这是回复一。';
+        case '2':
+          return '这是回复二。';
+        case '3':
+          return '这是回复三。';
       }
-    }
+    },
   },
-  mounted() {
-    this.fetchImage(); // 获取图片数据
-  }
 };
 </script>
 
-<style scoped>
-.container {
+<style>
+.online-consultation {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 水平居中 */
-  justify-content: center; /* 垂直居中 */
-  height: 100vh; /* 设置容器的高度为视口高度 */
 }
 
-.rectangle {
-  margin-top: 20px;
-  width: 800px; /* 设置矩形的宽度 */
-  height: 400px; /* 设置矩形的高度 */
-  background-color: dodgerblue; /* 设置矩形的背景颜色 */
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* 设置矩形的阴影 */
-  border-radius: 15px; /* 设置矩形的圆角 */
-  margin-bottom: 20px; /* 添加底部外边距以分隔矩形和表格 */
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f5f5f5;
 }
-.white-rectangle{
-  margin-top: 20px;
-  width: 360px; /* 设置矩形的宽度 */
-  height: 360px; /* 设置矩形的高度 */
-  background-color: white; /* 设置矩形的背景颜色 */
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* 设置矩形的阴影 */
-  border-radius: 15px; /* 设置矩形的圆角 */
-  margin-bottom: 20px; /* 添加底部外边距以分隔矩形和表格 */
-  margin-left: 140px;
-}
-.top{
+
+.messages {
   display: flex;
-  margin-top: 30px;
+  flex-direction: column;
 }
-.tt {
-  margin-left: 90px;
+
+.message {
+  max-width: 70%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-.logo{
-  width:100px;
-  height:95px;
-  margin-left: 20px;
+
+.user-message {
+  align-self: flex-end;
+  background-color: #409eff;
+  color: #fff;
 }
-.tet{
-  font-size: 30px;
-  margin-top: 27px;
-  color: white;
-  margin-left: 20px;
+
+.system-message {
+  align-self: center;
+  background-color: #409eff;
 }
-.image-container2{
-  margin-top: 80px;
-  margin-left:160px;
-}
-.total{
+
+.input-area {
   display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
-.showw{
-  margin-top:80px;
-  left:200px;
+
+.input-area .el-input {
+  flex: 1;
+  margin-right: 10px;
 }
-.groundandbuilding2{
-  width:320px;
+
+.el-main {
+  margin-bottom: 60px; /* Ensure there's space for the input area */
 }
 </style>
+
+
+<!-- <template>
+  <div class="online-consultation">
+    <el-container>
+      <el-main class="chat-window">
+        <div class="messages">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="{
+              message: true,
+              'user-message': message.isUser,
+              'system-message': message.isSystem,
+            }"
+          >
+            {{ message.content }}
+          </div>
+        </div>
+      </el-main>
+
+      <el-footer class="input-area">
+        <el-input
+          type="textarea"
+          v-model="newMessage"
+          placeholder="请输入您的问题..."
+          @keyup.enter.native="sendMessage"
+        />
+        <el-button type="primary" @click="sendMessage">发送</el-button>
+      </el-footer>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import axios from '../axios'; // 引入你创建的axios实例
+
+export default {
+  data() {
+    return {
+      messages: [
+        { content: '欢迎！请输入您的问题。', isUser: false, isSystem: true },
+      ], // 存储消息列表
+      newMessage: '', // 存储新消息内容
+    };
+  },
+  methods: {
+    async sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        // 将新消息添加到消息列表中
+        this.messages.push({
+          content: this.newMessage,
+          isUser: true,
+          isSystem: false,
+        });
+
+        // 发送消息到后端
+        try {
+          const response = await axios.post('/your-endpoint', {
+            message: this.newMessage,
+          });
+
+          // 将后端回复添加到消息列表中
+          this.messages.push({
+            content: response.data.reply,
+            isUser: false,
+            isSystem: false,
+          });
+        } catch (error) {
+          console.error('Error sending message:', error);
+          this.messages.push({
+            content: '发送消息时出错，请稍后再试。',
+            isUser: false,
+            isSystem: false,
+          });
+        }
+
+        // 清空输入框
+        this.newMessage = '';
+      }
+    },
+  },
+};
+</script>
+
+<style>
+.online-consultation {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #409eff;
+  color: #fff;
+}
+
+.system-message {
+  align-self: center;
+  background-color: #ffe58f;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.input-area .el-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.el-main {
+  margin-bottom: 60px; /* Ensure there's space for the input area */
+}
+</style>
+ -->

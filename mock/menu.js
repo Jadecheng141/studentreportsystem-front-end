@@ -3,33 +3,65 @@ const list = [
     id: 1,
     sort: 1,
     status: 1,
+    path: '/b',
+    name: 'B',
+    title: '报道信息',
+    icon: 'el-icon-help',
+    children: [{
+      id: 2,
+      sort: 1,
+      status: 1,
+      path: '/b/baodo',
+      name: 'Baodao',
+      title: '基本信息'
+    }, {
+      id: 3,
+      sort: 1,
+      status: 1,
+      path: '/b/domitorydecide',
+      name: 'Domitorydecide',
+      title: '宿舍确认'
+    }, {
+      id: 4,
+      sort: 1,
+      status: 1,
+      path: '/b/card',
+      name: 'Card',
+      title: '校园卡申请'
+    }
+    ]
+  },
+  {
+    id: 5,
+    sort: 1,
+    status: 1,
     path: '/ads',
     name: 'Ads',
     title: '学校信息',
     icon: 'el-icon-help',
     children: [{
-      id: 2,
+      id: 6,
       sort: 1,
       status: 1,
       path: '/ads/banner',
       name: 'Banner',
       title: '学校简介'
     }, {
-      id: 3,
+      id: 7,
       sort: 1,
       status: 1,
       path: '/ads/link',
       name: 'Link',
       title: '师资力量'
     }, {
-      id: 4,
+      id: 8,
       sort: 1,
       status: 1,
       path: '/ads/leader',
       name: 'Leader',
       title: '历任领导'
     }, {
-      id: 5,
+      id: 9,
       sort: 1,
       status: 1,
       path: '/ads/history',
@@ -39,7 +71,7 @@ const list = [
     ]
   },
   {
-    id: 6,
+    id: 10,
     sort: 1,
     status: 1,
     path: '/nested',
@@ -47,7 +79,7 @@ const list = [
     title: '我的宿舍',
     children:[
       {
-        id: 7,
+        id: 11,
         sort: 1,
         status: 1,
         path: '/nested/domitory',
@@ -58,7 +90,7 @@ const list = [
     ]
   },
   {
-    id: 8,
+    id: 12,
     sort: 1,
     status: 1,
     path: '/site',
@@ -66,18 +98,18 @@ const list = [
     title: '基础设置',
     children: [
       {
-        id: 9,
+        id: 13,
         sort: 1,
         status: 1,
         path: '/site/index',
         name: 'SiteSet',
-        title: '我的校园卡',
+        title: '在线咨询',
         icon: 'el-icon-setting'
       }
     ]
   },
   {
-    id: 10,
+    id: 14,
     sort: 1,
     status: 1,
     path: '/setting',
@@ -86,7 +118,7 @@ const list = [
     icon: 'el-icon-s-tools',
     children: [
       {
-        id: 11,
+        id: 15,
         sort: 1,
         status: 1,
         path: '/setting/user',
@@ -94,7 +126,7 @@ const list = [
         title: '课程查询'
       },
       {
-        id: 12,
+        id: 16,
         sort: 1,
         status: 1,
         path: '/setting/role',
@@ -102,7 +134,7 @@ const list = [
         title: '课程选择'
       },
       {
-        id: 13,
+        id: 17,
         sort: 1,
         status: 1,
         path: '/setting/menu',
