@@ -32,7 +32,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: ' https://e64e-113-249-231-182.ngrok-free.app', // 后端地址
+        target: ' https://20d0-113-249-231-182.ngrok-free.app', // 后端地址
         changeOrigin: true,
         pathRewrite: {
           '^/api': '' // 将这里修改为符合远程服务地址的路径

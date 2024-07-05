@@ -4,7 +4,7 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 
 const instance = axios.create({
-  baseURL: ' https://e64e-113-249-231-182.ngrok-free.app',
+  baseURL: '  https://20d0-113-249-231-182.ngrok-free.app',
   timeout: 10000,
   withCredentials: true,
   headers: {
