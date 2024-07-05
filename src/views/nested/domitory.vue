@@ -53,7 +53,6 @@
          label="班级">
        </el-table-column>
     </el-table>
-    <img :src="imageUrl" alt="宿舍照片" class="image-container">
   </div>
 </template>
 
@@ -64,9 +63,9 @@ export default {
   data() {
     return {
       form: {
+        order: '',
+        id: '',
         name: '',
-        region: '',
-        date1: '',
         date2: '',
         delivery: false,
         type: [],

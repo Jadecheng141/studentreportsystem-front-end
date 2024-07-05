@@ -106,7 +106,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.courseId }}
+          {{ scope.row.id }}
         </template>
       </el-table-column>
       <el-table-column
@@ -115,7 +115,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.courseName }}
+          {{ scope.row.name }}
         </template>
       </el-table-column>
       <el-table-column
@@ -124,7 +124,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.institution }}</span>
+          <span>{{ scope.row.academy }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -150,16 +150,25 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.score }}
+          {{ scope.row.credits }}
         </template>
       </el-table-column>
       <el-table-column
-        label="开课学期"
+        label="选课情况"
         width="160"
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.semester }}</span>
+          <span>{{ scope.row.selected_students }}/{{ scope.row.capacity }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="开课地点"
+        width="160"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.location }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -180,9 +189,22 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="view(scope)">
-            查看
-          </el-button>
+          <el-button-group>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="edit(scope)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              @click="del(scope)"
+            >
+              删除
+            </el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -194,9 +216,19 @@
       :limit.sync="listQuery.limit"
       @pagination="fetchData"
     />
+
+    <el-button
+      class="add-course-button"
+      type="primary"
+      size="large"
+      @click="create"
+    >
+      添加课程
+    </el-button>
+
     <el-dialog
       :visible.sync="dialogVisible"
-      :title="dialogType === '编辑' ? '编辑课程信息' : '查看课程信息'"
+      :title="dialogType === '编辑' ? '编辑课程信息' : '新增课程信息'"
     >
       <el-form
         ref="dataForm"
@@ -205,47 +237,66 @@
         label-position="right"
       >
         <el-form-item label="课程编号">
-          <el-input v-model="temp.courseId" placeholder="请输入课程编号" disabled/>
+          <el-input v-model="temp.id" placeholder="请输入课程编号" />
         </el-form-item>
         <el-form-item label="课程名称">
-          <el-input v-model="temp.courseName" placeholder="请输入课程名称" disabled/>
+          <el-input v-model="temp.name" placeholder="请输入课程名称" />
         </el-form-item>
         <el-form-item label="开课部门">
-          <el-input v-model="temp.institution" placeholder="请输入开课部门" disabled/>
+          <el-input v-model="temp.academy" placeholder="请输入开课部门" />
         </el-form-item>
-        <el-form-item label="开课学期">
-          <el-input v-model="temp.semester" placeholder="请输入开课学期" disabled/>
+        <el-form-item label="课程负责人">
+          <el-input v-model="temp.person" placeholder="请输入课程负责人" />
+        </el-form-item>
+        <el-form-item label="课程容纳人数">
+          <el-input v-model="temp.capacity" placeholder="请输入课程容纳人数" />
+        </el-form-item>
+        <el-form-item label="总课时">
+          <el-input v-model="temp.total_hours" placeholder="请输入总课时" />
         </el-form-item>
         <el-form-item label="学分">
-          <el-input v-model="temp.score" placeholder="请输入学分" disabled/>
+          <el-input v-model="temp.credits" placeholder="请输入学分" />
         </el-form-item>
-        <el-form-item label="课程描述">
-          <el-input v-model="temp.introduction" placeholder="请输入课程描述" disabled/>
+        <el-form-item label="选课人数">
+          <el-input v-model="temp.selected_students" placeholder="请输入选课人数" />
+        </el-form-item>
+        <el-form-item label="开课地点">
+          <el-input v-model="temp.location" placeholder="请输入开课地点" />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="temp.status" placeholder="请选择状态">
+            <el-option label="可选" :value="1" />
+            <el-option label="不可选" :value="0" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div class="text-right">
-        <el-button type="primary" @click="dialogVisible = false">
-          关闭
+        <el-button type="danger" @click="dialogVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="submit">
+          确定
         </el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
-
 <script>
 import Pagination from '@/components/Pagination'
+// import { getList } from '@/api/user'
 import { deepClone } from '@/utils'
 
 const _temp = {
-  courseId: '',
-  courseName: '',
-  institution: '',
+  id: '',
+  name: '',
+  academy: '',
   person: '',
+  capacity: '',
   total_hours: '',
-  score: '',
-  semester: '',
-  introduction: '',
+  credits: '',
+  selected_students: '',
+  location: '',
   status: 1
 }
 
@@ -310,10 +361,10 @@ export default {
     async fetchData() {
       // 模拟数据
       this.list = [
-        { courseId: 'C001', courseName: '计算机基础', institution: '计算机学院', person: '刘大江', total_hours: 32, score: 3, semester: '大一春季学期', introduction: 'This course introduces the basics of computer science.', status: 1 },
-        { courseId: 'C002', courseName: '农学概论', institution: '农学院', person: '冯永', total_hours: 24, score: 2, semester: '大一春季学期', introduction: 'This course introduces the basics of agriculture.', status: 1 },
-        { courseId: 'C003', courseName: '文学赏析', institution: '人文学院', person: '但敬佩', total_hours: 16, score: 1, semester: '大一春季学期', introduction: 'This course introduces the basics of literature appreciation.', status: 0 },
-        { courseId: 'C004', courseName: '工程力学', institution: '工程学院', person: '叶春晓', total_hours: 32, score: 3, semester: '大一春季学期', introduction: 'This course introduces the basics of engineering mechanics.', status: 1 }
+        { id: 'C001', name: '计算机基础', academy: '计算机学院', person: '刘大江', capacity: 60, total_hours: 32, credits: 3, selected_students: 30, location: 'A101', status: 1 },
+        { id: 'C002', name: '农学概论', academy: '农学院', person: '冯永', capacity: 50, total_hours: 24, credits: 2, selected_students: 25, location: 'B202', status: 1 },
+        { id: 'C003', name: '文学赏析', academy: '人文学院', person: '但敬佩', capacity: 40, total_hours: 16, credits: 1, selected_students: 20, location: 'C303', status: 0 },
+        { id: 'C004', name: '工程力学', academy: '工程学院', person: '叶春晓', capacity: 70, total_hours: 32, credits: 3, selected_students: 40, location: 'D404', status: 1 }
       ];
       this.total = this.list.length;
       this.filteredList = this.list;
@@ -327,10 +378,46 @@ export default {
       this.dialogType = '新增'
       this.dialogVisible = true
     },
-    async view(scope) {
+    async edit(scope) {
       this.temp = deepClone(scope.row)
-      this.dialogType = '查看'
+      this.dialogType = '编辑'
       this.dialogVisible = true
+    },
+    async del(scope) {
+      this.$confirm('确认删除该条数据吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const index = this.list.findIndex(item => item.id === scope.row.id);
+        if (index !== -1) {
+          this.list.splice(index, 1);
+          this.filteredList = this.list;
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    submit() {
+      this.$refs.dataForm.validate(valid => {
+        if (valid) {
+          const index = this.list.findIndex(item => item.id === this.temp.id);
+          if (index !== -1) {
+            this.list.splice(index, 1, this.temp);
+          } else {
+            this.list.push(this.temp);
+          }
+          this.filteredList = this.list;
+          this.dialogVisible = false;
+        }
+      })
     },
     search() {
       this.filterList()
@@ -355,12 +442,12 @@ export default {
         return (
           (this.listQuery.statuscourse === undefined || item.status === this.listQuery.statuscourse) &&
           (this.listQuery.statusempty === undefined || (this.listQuery.statusempty === 1 ? item.selected_students === item.capacity : item.selected_students !== item.capacity)) &&
-          (!this.listQuery.value_academy || item.institution.includes(this.listQuery.value_academy)) &&
+          (!this.listQuery.value_academy || item.academy.includes(this.listQuery.value_academy)) &&
           (!this.listQuery.person || item.person.includes(this.listQuery.person)) &&
-          (this.listQuery.value_score === undefined || item.score === parseFloat(this.listQuery.value_score)) &&
+          (this.listQuery.value_score === undefined || item.credits === parseFloat(this.listQuery.value_score)) &&
           (this.listQuery.value_time === undefined || item.total_hours === parseFloat(this.listQuery.value_time)) &&
-          (!this.listQuery.keywordid || item.courseId.includes(this.listQuery.keywordid)) &&
-          (!this.listQuery.keywordname || item.courseName.includes(this.listQuery.keywordname))
+          (!this.listQuery.keywordid || item.id.includes(this.listQuery.keywordid)) &&
+          (!this.listQuery.keywordname || item.name.includes(this.listQuery.keywordname))
         );
       });
       this.total = this.filteredList.length;
@@ -377,7 +464,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .filter-container1, .filter-container2 {
@@ -400,6 +486,11 @@ export default {
 }
 .text-right {
   text-align: right;
+}
+.add-course-button {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
 }
 .status-label {
   padding: 5px 10px;

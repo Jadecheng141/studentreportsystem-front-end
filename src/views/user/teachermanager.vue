@@ -99,9 +99,22 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="view(scope)">
-            查看
-          </el-button>
+          <el-button-group>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="edit(scope)"
+            >
+              查看编辑
+            </el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              @click="del(scope)"
+            >
+              删除
+            </el-button>
+          </el-button-group>
         </template>
       </el-table-column>
     </el-table>
@@ -113,10 +126,20 @@
       :limit.sync="listQuery.limit"
       @pagination="fetchData"
     />
+
+    <el-button
+      class="add-teacher-button"
+      type="primary"
+      size="large"
+      @click="create"
+    >
+      添加教师
+    </el-button>
+
     <el-dialog
       :visible.sync="dialogVisible"
       width="70%"
-      :title="dialogType === '查看' ? '教师信息' : '新增教师信息'"
+      :title="dialogType === '查看编辑' ? '教师信息' : '新增教师信息'"
     >
       <el-form
         ref="dataForm"
@@ -127,16 +150,16 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="教师工号">
-              <el-input v-model="temp.teacherId" placeholder="请输入教师工号" :disabled="dialogType === '查看'" />
+              <el-input v-model="temp.teacherId" placeholder="请输入教师工号" />
             </el-form-item>
             <el-form-item label="教师姓名">
-              <el-input v-model="temp.teacherName" placeholder="请输入教师姓名" :disabled="dialogType === '查看'" />
+              <el-input v-model="temp.teacherName" placeholder="请输入教师姓名" />
             </el-form-item>
             <el-form-item label="职称">
-              <el-input v-model="temp.title" placeholder="请输入职称" :disabled="dialogType === '查看'" />
+              <el-input v-model="temp.title" placeholder="请输入职称" />
             </el-form-item>
             <el-form-item label="所属学院">
-              <el-select v-model="temp.college" placeholder="请选择学院" :disabled="dialogType === '查看'">
+              <el-select v-model="temp.college" placeholder="请选择学院">
                 <el-option
                   v-for="item in options_college"
                   :key="item.value"
@@ -146,7 +169,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="电子邮箱">
-              <el-input v-model="temp.email" placeholder="请输入电子邮箱" :disabled="dialogType === '查看'" />
+              <el-input v-model="temp.email" placeholder="请输入电子邮箱" />
             </el-form-item>
             <el-form-item label="照片">
               <el-upload
@@ -157,9 +180,8 @@
                 :on-remove="handleRemove"
                 :on-success="handleSuccess"
                 :before-upload="beforeUpload"
-                :disabled="dialogType === '查看'"
               >
-                <i class="el-icon-plus" v-if="dialogType !== '查看'"></i>
+                <i class="el-icon-plus"></i>
               </el-upload>
               <el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
@@ -173,27 +195,22 @@
                 v-model="temp.bio"
                 placeholder="请输入个人简介"
                 rows="10"
-                :disabled="dialogType === '查看'"
               />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div class="text-right">
-        <el-button v-if="dialogType !== '查看'" type="danger" @click="dialogVisible = false">
+        <el-button type="danger" @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button v-if="dialogType !== '查看'" type="primary" @click="submit">
+        <el-button type="primary" @click="submit">
           确定
-        </el-button>
-        <el-button v-else type="primary" @click="dialogVisible = false">
-          关闭
         </el-button>
       </div>
     </el-dialog>
   </div>
 </template>
-
 
 <script>
 import Pagination from '@/components/Pagination'
@@ -257,20 +274,6 @@ export default {
         { teacherId: 'T001', teacherName: '张三', college: '计算机学院', title: '教授', email: 'zhangsan@example.com', photo: 'http://example.com/photo1.jpg', bio: '张三教授的个人简介' },
         { teacherId: 'T002', teacherName: '李四', college: '农学院', title: '副教授', email: 'lisi@example.com', photo: 'http://example.com/photo2.jpg', bio: '李四副教授的个人简介' },
         { teacherId: 'T003', teacherName: '王五', college: '人文学院', title: '讲师', email: 'wangwu@example.com', photo: 'http://example.com/photo3.jpg', bio: '王五讲师的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
         { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' }
       ];
       this.total = this.list.length;
@@ -285,11 +288,33 @@ export default {
       this.dialogType = '新增'
       this.dialogVisible = true
     },
-    async view(scope) {
+    async edit(scope) {
       this.temp = deepClone(scope.row)
-      this.dialogType = '查看'
+      this.dialogType = '编辑'
       this.dialogVisible = true
       this.fileList = this.temp.photo ? [{ name: '照片', url: this.temp.photo }] : [];
+    },
+    async del(scope) {
+      this.$confirm('确认删除该条数据吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const index = this.list.findIndex(item => item.teacherId === scope.row.teacherId);
+        if (index !== -1) {
+          this.list.splice(index, 1);
+          this.filteredList = this.list;
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
     submit() {
       this.$refs.dataForm.validate(valid => {
@@ -354,7 +379,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .filter-container1 {
