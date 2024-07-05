@@ -1,300 +1,253 @@
+
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-input
-        v-model="listQuery.keyword"
-        size="small"
-        placeholder="请输入关键词"
-        clearable
-        class="filter-item w-200"
-      />
-      <el-button-group class="filter-item">
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-search"
-          @click="search"
-        >
-          搜索
-        </el-button>
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-refresh"
-          @click="refresh"
-        >
-          重置
-        </el-button>
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-plus"
-          @click="add"
-        >
-          新增
-        </el-button>
-      </el-button-group>
-    </div>
-
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      height="100%"
-      class="table-container"
-      highlight-current-row
-    >
-      <el-table-column
-        fixed
-        label="ID"
-        width="80"
-        align="center"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="用户组名称"
-        align="center"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="用户组标识"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="状态"
-        width="80"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="changeStatus($event, scope)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="200"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <el-button-group>
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              @click="edit(scope)"
-            >
-              修改
-            </el-button>
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              @click="del(scope)"
-            >
-              删除
-            </el-button>
-          </el-button-group>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="fetchData"
-    />
-
-    <el-dialog
-      :visible.sync="dialogVisible"
-      :title="dialogType === 'modify' ? '修改' : '新增'"
-    >
-      <el-form
-        ref="dataForm"
-        :model="temp"
-        label-width="120px"
-        label-position="right"
-      >
-        <el-form-item label="用户组名称">
-          <el-input v-model="temp.title" placeholder="请输入用户组名称" />
-        </el-form-item>
-        <el-form-item label="用户组标识">
-          <el-input v-model="temp.name" placeholder="请输入用户组标识" />
-        </el-form-item>
-        <el-form-item label="菜单权限">
-          <el-tree
-            ref="tree"
-            :data="menus"
-            :props="defaultMenuProps"
-            show-checkbox
-            accordion
-            node-key="id"
-            class="permission-tree"
-          />
-        </el-form-item>
-        <el-form-item label="用户组状态">
-          <el-radio-group v-model="temp.status">
-            <el-radio :label="0">禁用</el-radio>
-            <el-radio :label="1">正常</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <div class="text-right">
-        <el-button type="danger" @click="dialogVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="submit">
-          确定
-        </el-button>
+  <el-container>
+    <!-- 侧边栏 -->
+    <el-aside width="500px" class="aside">
+      <div>
+        <h3 class="text">选中的信息：</h3>
+        <ul>
+          <li v-for="(row, index) in savedRows" :key="index" class="saved-row">
+            日期: {{ row.date }} 姓名: {{ row.name }}
+            <el-button type="danger" @click="removeSavedRow(index, row)" class="delete-button">删除</el-button>
+          </li>
+        </ul>
       </div>
-    </el-dialog>
-  </div>
+    </el-aside>
+
+    <!-- 主内容 -->
+    <el-container>
+      <el-header class="header">
+        <div class="button">
+          <el-link :underline="false" href="http://localhost:9529/#/setting/menu" target="_blank" class="mytable">我的课表</el-link>
+        </div>
+      </el-header>
+      <el-main class="main">
+        <el-table
+          ref="multipleTable"
+          :data="tableData"
+          tooltip-effect="dark"
+          style="width: 100%"
+          @selection-change="handleSelectionChange">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
+          <el-table-column
+                      prop="date"
+                      label="课程编码"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="name"
+                      label="课程名称"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="score"
+                      label="学分"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="place"
+                      label="校区"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="type"
+                      label="课程类别"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="setting"
+                      label="课程性质"
+                      width="120">
+                    </el-table-column>
+                    <el-table-column
+                      prop="situation"
+                      label="选择情况"
+                      show-overflow-tooltip>
+                    </el-table-column>
+          <!-- 根据实际需要添加其他列 -->
+        </el-table>
+        <div class="button-group">
+          <el-button @click="saveSelection()">确定选择</el-button>
+          <el-button @click="toggleSelection()">取消选择</el-button>
+        </div>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination'
-import { getList } from '@/api/role'
-import { getList as getMenu } from '@/api/menu'
-import { deepClone } from '@/utils'
-
-const _temp = {
-  id: '',
-  title: '',
-  name: '',
-  perm: [],
-  status: 1
-}
+import axios from 'axios';
 
 export default {
-  components: {
-    Pagination
-  },
   data() {
     return {
-      total: 0,
-      list: [],
-      menus: [],
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        keyword: undefined
-      },
-      temp: Object.assign({}, _temp),
-      dialogVisible: false,
-      dialogType: 'create',
-      loading: false,
-      defaultMenuProps: {
-        children: 'children',
-        label: 'title'
-      }
-    }
+      tableData: [],
+      multipleSelection: [],
+      savedRows: []
+    };
   },
-  created() {
-    this.fetchData()
-    this.fetchMenu()
+  mounted() {
+    this.fetchTableData(); // 组件挂载时获取数据
+    this.loadSavedRows();
   },
   methods: {
-    search() {
-      this.fetchData()
-    },
-    refresh() {
-      this.listQuery = {
-        page: 1,
-        limit: 20,
-        keyword: undefined
-      }
-      this.fetchData()
-    },
-    fetchData() {
-      this.listLoading = true
-      getList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-        this.listLoading = false
-      })
-    },
-    fetchMenu() {
-      getMenu().then(response => {
-        this.menus = response.data.list
-      })
-    },
-    resetTemp() {
-      this.temp = Object.assign({}, _temp)
-    },
-    add() {
-      this.resetTemp()
-      this.dialogVisible = true
-      this.dialogType = 'create'
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    edit(scope) {
-      this.resetTemp()
-      this.dialogVisible = true
-      this.dialogType = 'modify'
-      this.temp = deepClone(scope.row)
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    changeStatus(value, scope) {
-      setTimeout(() => {
-        this.list[scope.$index].status = value
-        this.$message({
-          message: '更新成功',
-          type: 'success'
+    fetchTableData() {
+      axios.get('http://localhost:8080/api/table-data') // 替换为实际的Spring Boot API端点
+        .then(response => {
+          this.tableData = response.data;
+          this.syncTableSelection(); // 同步保存的行与表格选择状态
         })
-      }, 300)
+        .catch(error => {
+          console.error('获取表格数据出错:', error);
+        });
     },
-    del(scope) {
-      this.$confirm('确认删除该条数据吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        setTimeout(() => {
-          this.list.splice(scope.$index, 1)
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        }, 300)
-      })
-    },
-    submit() {
-      if (this.loading) {
-        return
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.multipleTable.clearSelection();
       }
-      this.loading = true
-      setTimeout(() => {
-        this.$message({
-          message: '提交成功',
-          type: 'success'
-        })
-        this.dialogVisible = false
-        this.loading = false
-      }, 300)
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    saveSelection() {
+      // 如果需要，实现保存逻辑到后端
+      // 这里仅作为演示，在本地更新保存的行数据
+      this.multipleSelection.forEach(row => {
+        if (!this.isRowSaved(row)) {
+          this.savedRows.push(row);
+        }
+      });
+      this.syncTableSelection();
+    },
+    isRowSaved(row) {
+      return this.savedRows.some(savedRow => savedRow.date === row.date && savedRow.name === row.name);
+    },
+    loadSavedRows() {
+      const savedRows = localStorage.getItem('savedRows');
+      if (savedRows) {
+        this.savedRows = JSON.parse(savedRows);
+      }
+      this.syncTableSelection();
+    },
+    syncTableSelection() {
+      this.$nextTick(() => {
+        this.savedRows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row, true);
+        });
+      });
+    },
+    removeSavedRow(index, row) {
+      this.savedRows.splice(index, 1);
+      localStorage.setItem('savedRows', JSON.stringify(this.savedRows));
+      this.$refs.multipleTable.toggleRowSelection(row, false);
     }
   }
-}
+};
 </script>
+<style>
+.el-container {
+  font-family: Arial, sans-serif;
+}
+.mytable{
+  top:-8px;
+}
+.aside {
+  background-color: #f5f7fa;
+  padding: 20px;
+  border-right: 1px solid #ebeef5;
+}
+
+.header {
+  background-color: #409eff;
+  color: #fff;
+  text-align: center;
+  line-height: 60px;
+}
+
+.main {
+  padding: 20px;
+}
+
+.button-group {
+  margin-top: 20px;
+}
+
+.button{
+  border-radius: 20px;
+  width: 120px;
+  background-image: linear-gradient(to bottom right, white, LightBlue);
+  margin-left: 450px;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.saved-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ebeef5;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  height: 50px;
+}
+
+.delete-button {
+  margin-left: 20px;
+}
+
+.el-header, .el-footer {
+  background-color: #409eff;
+  color: #fff;
+  text-align: center;
+  line-height: 60px;
+}
+
+.el-aside {
+  background-color: #f5f7fa;
+  color: #333;
+  text-align: center;
+  line-height: 200px;
+  padding: 20px;
+}
+
+.el-main {
+  background-color: #f5f7fa;
+  color: #333;
+  text-align: center;
+  line-height: 160px;
+  padding: 20px;
+}
+.text{
+  margin-top:1px;
+}
+body > .el-container {
+  margin-bottom: 40px;
+}
+
+.el-container:nth-child(5) .el-aside,
+.el-container:nth-child(6) .el-aside {
+  line-height: 260px;
+}
+
+.el-container:nth-child(7) .el-aside {
+  line-height: 320px;
+}
+
+.el-table .el-checkbox__inner {
+  border-color: #409eff;
+}
+
+.el-table .el-checkbox__inner:hover, .el-table .el-checkbox__inner.is-checked {
+  background-color: #409eff;
+  border-color: #409eff;
+}
+</style>

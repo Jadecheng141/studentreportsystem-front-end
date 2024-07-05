@@ -1,161 +1,285 @@
 <template>
-  <div class="app-container">
-    <el-form
-      ref="dataForm"
-      v-loading="listLoading"
-      :model="temp"
-      label-width="120px"
-      :label-position="labelObj"
-    >
-      <div class="form-container">
-        <div class="form-container-body">
-          <el-row>
-            <el-col :md="18" :lg="18" :xl="18">
-              <el-form-item label="关闭站点">
-                <el-radio-group v-model="temp.is_close">
-                  <el-radio :label="0">开启</el-radio>
-                  <el-radio :label="1">关闭</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="开启验证码">
-                <el-radio-group v-model="temp.enable_captcha">
-                  <el-radio :label="1">开启</el-radio>
-                  <el-radio :label="0">关闭</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="站点名称" prop="site_name">
-                <el-input v-model="temp.site_name" placeholder="请输入站点名称" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="站点logo">
-                <el-upload
-                  class="avatar-uploader"
-                  :action="uploadUrl"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload"
-                >
-                  <img v-if="temp.site_logo" :src="temp.site_logo" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon" />
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="SEO关键词">
-                <el-input v-model="temp.keywords" placeholder="请输入SEO关键词" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="SEO描述">
-                <el-input v-model="temp.description" placeholder="请输入SEO描述" type="textarea" />
-              </el-form-item>
-              <el-form-item label="版权所有">
-                <el-input v-model="temp.copyright" placeholder="请输入版权所有" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="公司名称">
-                <el-input v-model="temp.company" placeholder="请输入公司名称" @keyup.enter.native="submit" />
-              </el-form-item>
-              <el-form-item label="联系人">
-                <el-input v-model="temp.contact" placeholder="请输入联系人" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-user" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="联系QQ">
-                <el-input v-model="temp.qq" placeholder="请输入联系电话" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-phone-outline" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="电子邮件">
-                <el-input v-model="temp.email" placeholder="请输入电子邮件" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-document-copy" />
-                </el-input>
-              </el-form-item>
-              <el-form-item label="联系地址">
-                <el-input v-model="temp.address" placeholder="请输入联系地址" @keyup.enter.native="submit">
-                  <i slot="append" class="el-icon-location" />
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
+  <div class="online-consultation">
+    <el-container>
+      <el-main class="chat-window">
+        <div class="messages">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="{
+              message: true,
+              'user-message': message.isUser,
+              'system-message': message.isSystem,
+            }"
+          >
+            {{ message.content }}
+          </div>
         </div>
-        <div class="form-container-footer">
-          <el-button type="primary" size="small" @click="submit">提交</el-button>
-        </div>
-      </div>
-    </el-form>
+      </el-main>
+
+
+      <el-footer class="input-area">
+        <el-input
+          type="textarea"
+          v-model="newMessage"
+          placeholder="请输入您的问题..."
+          @keyup.enter.native="sendMessage"
+        />
+        <el-button type="primary" @click="sendMessage">发送</el-button>
+      </el-footer>
+    </el-container>
   </div>
 </template>
 
 <script>
+export default {
+  data() {
+    return {
+      messages: [
+        { content: '欢迎！请输入1、2或3以获取不同的回复。', isUser: false, isSystem: true },
+      ], // 存储消息列表
+      newMessage: '', // 存储新消息内容
+    };
+  },
+  methods: {
+    sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        // 将新消息添加到消息列表中
+        this.messages.push({
+          content: this.newMessage,
+          isUser: true,
+          isSystem: false,
+        });
 
-const _temp = {
-  is_close: 0,
-  enable_captcha: 0,
-  site_name: '逐影未来',
-  site_logo: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/146/h/146',
-  keywords: '逐影未来',
-  description: '逐影未来',
-  copyright: '逐影未来',
-  contact: '逐影未来',
-  qq: '2264535745',
-  email: '2264535745@qq.com',
-  company: '逐影未来',
-  address: ''
+        // 模拟接收客服回复
+        setTimeout(() => {
+          const reply = this.getReply(this.newMessage);
+          this.messages.push({
+            content: reply,
+            isUser: false,
+            isSystem: false,
+          });
+        }, 1000);
+
+        // 清空输入框
+        this.newMessage = '';
+      }
+    },
+    getReply(message) {
+      switch (message) {
+        case "1":
+          return '这是回复一。';
+        case '2':
+          return '这是回复二。';
+        case '3':
+          return '这是回复三。';
+      }
+    },
+  },
+};
+</script>
+
+<style>
+.online-consultation {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #409eff;
+  color: #fff;
+}
+
+.system-message {
+  align-self: center;
+  background-color: #409eff;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.input-area .el-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.el-main {
+  margin-bottom: 60px; /* Ensure there's space for the input area */
+}
+</style>
+
+
+<!-- <template>
+  <div class="online-consultation">
+    <el-container>
+      <el-main class="chat-window">
+        <div class="messages">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="{
+              message: true,
+              'user-message': message.isUser,
+              'system-message': message.isSystem,
+            }"
+          >
+            {{ message.content }}
+          </div>
+        </div>
+      </el-main>
+
+      <el-footer class="input-area">
+        <el-input
+          type="textarea"
+          v-model="newMessage"
+          placeholder="请输入您的问题..."
+          @keyup.enter.native="sendMessage"
+        />
+        <el-button type="primary" @click="sendMessage">发送</el-button>
+      </el-footer>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import axios from '../axios'; // 引入你创建的axios实例
 
 export default {
   data() {
     return {
-      listLoading: false,
-      loading: false,
-      uploadUrl: '',
-      temp: Object.assign({}, _temp)
-    }
-  },
-  computed: {
-    labelObj() {
-      return this.$store.state.app.device === 'mobile' ? 'top' : 'right'
-    }
-  },
-  created() {
-    this.getInfo()
+      messages: [
+        { content: '欢迎！请输入您的问题。', isUser: false, isSystem: true },
+      ], // 存储消息列表
+      newMessage: '', // 存储新消息内容
+    };
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.temp.site_logo = URL.createObjectURL(file.raw)
+    async sendMessage() {
+      if (this.newMessage.trim() !== '') {
+        // 将新消息添加到消息列表中
+        this.messages.push({
+          content: this.newMessage,
+          isUser: true,
+          isSystem: false,
+        });
+
+        // 发送消息到后端
+        try {
+          const response = await axios.post('/your-endpoint', {
+            message: this.newMessage,
+          });
+
+          // 将后端回复添加到消息列表中
+          this.messages.push({
+            content: response.data.reply,
+            isUser: false,
+            isSystem: false,
+          });
+        } catch (error) {
+          console.error('Error sending message:', error);
+          this.messages.push({
+            content: '发送消息时出错，请稍后再试。',
+            isUser: false,
+            isSystem: false,
+          });
+        }
+
+        // 清空输入框
+        this.newMessage = '';
+      }
     },
-    beforeAvatarUpload(file) {
-      if (!this.uploadUrl) {
-        this.$message.error('请设置正确的图片上传地址!')
-        return false
-      }
-      const isJPG = file.type === 'image/*'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isJPG) {
-        this.$message.error('只能上传图片格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    getInfo() {
-      if (this.listLoading) {
-        return false
-      }
-      this.listLoading = true
-      setTimeout(() => {
-        this.listLoading = false
-      }, 100)
-    },
-    submit() {
-      if (this.loading) {
-        return
-      }
-      this.loading = true
-      setTimeout(() => {
-        this.$message({
-          message: '提交成功',
-          type: 'success'
-        })
-        this.loading = false
-      }, 300)
-    }
-  }
-}
+  },
+};
 </script>
+
+<style>
+.online-consultation {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #409eff;
+  color: #fff;
+}
+
+.system-message {
+  align-self: center;
+  background-color: #ffe58f;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.input-area .el-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.el-main {
+  margin-bottom: 60px; /* Ensure there's space for the input area */
+}
+</style>
+ -->

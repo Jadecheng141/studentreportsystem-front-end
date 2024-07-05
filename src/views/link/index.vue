@@ -1,41 +1,47 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="listQuery.value_academy" size="small" placeholder="开课学院" class="filter-item">
+        <el-option
+          v-for="item in options_academy"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
       <el-input
-        v-model="listQuery.keyword"
+        v-model="listQuery.keywordid"
         size="small"
-        placeholder="请输入关键词"
+        placeholder="请输入课程编号"
         clearable
         class="filter-item w-200"
       />
-      <el-button-group class="filter-item">
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-search"
-          @click="search"
-        >
-          搜索
-        </el-button>
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-refresh"
-          @click="refresh"
-        >
-          重置
-        </el-button>
-        <el-button
-          size="small"
-          type="primary"
-          icon="el-icon-plus"
-          @click="add"
-        >
-          新增
-        </el-button>
-      </el-button-group>
+      <el-input
+        v-model="listQuery.keywordname"
+        size="small"
+        placeholder="请输入课程名称"
+        clearable
+        class="filter-item w-200"
+      />
+      <el-button
+        size="small"
+        type="primary"
+        icon="el-icon-search"
+        @click="search"
+        class="filter-item"
+      >
+        搜索
+      </el-button>
+      <el-button
+        size="small"
+        type="primary"
+        icon="el-icon-refresh"
+        @click="refresh"
+        class="filter-item"
+      >
+        重置
+      </el-button>
     </div>
-
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -47,9 +53,7 @@
       highlight-current-row
     >
       <el-table-column
-        fixed
-        label="ID"
-        width="80"
+        label="教师工号"
         align="center"
       >
         <template slot-scope="scope">
@@ -57,58 +61,42 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="名称"
+        label="教师姓名"
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.username }}
         </template>
       </el-table-column>
       <el-table-column
-        label="链接地址"
+        label="所属学院"
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.link }}</span>
+          <span>{{ scope.row.truename }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="状态"
-        width="80"
+        label="职称"
         align="center"
       >
         <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="changeStatus($event, scope)"
-          />
+          {{ scope.row.type }}
         </template>
       </el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
-        width="200"
         align="center"
       >
         <template slot-scope="scope">
           <el-button-group>
             <el-button
               type="primary"
-              icon="el-icon-edit"
               size="mini"
               @click="edit(scope)"
             >
-              修改
-            </el-button>
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              @click="del(scope)"
-            >
-              删除
+              查看
             </el-button>
           </el-button-group>
         </template>
@@ -125,7 +113,7 @@
 
     <el-dialog
       :visible.sync="dialogVisible"
-      :title="dialogType === 'modify' ? '修改' : '新增'"
+      :title="dialogType === '查看'"
     >
       <el-form
         ref="dataForm"
@@ -133,13 +121,31 @@
         label-width="120px"
         label-position="right"
       >
-        <el-form-item label="名称">
-          <el-input v-model="temp.title" placeholder="请输入名称" />
+        <el-form-item label="用户名">
+          <el-input v-model="temp.username" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="链接地址">
-          <el-input v-model="temp.link" placeholder="请输入链接地址" />
+        <el-form-item label="真实姓名">
+          <el-input v-model="temp.truename" placeholder="请输入真实姓名" />
         </el-form-item>
-        <el-form-item label="用户组状态">
+        <el-form-item label="电子邮箱">
+          <el-input v-model="temp.email" placeholder="请输入电子邮箱" />
+        </el-form-item>
+        <el-form-item label="用户类型">
+          <el-radio-group v-model="temp.type">
+            <el-radio label="管理员">管理员</el-radio>
+            <el-radio label="编辑">编辑</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="用户角色">
+          <el-checkbox-group v-model="temp.role">
+            <el-checkbox label="超级管理员" />
+            <el-checkbox label="编辑人员" />
+            <el-checkbox label="审核人员" />
+            <el-checkbox label="客服人员" />
+            <el-checkbox label="普通用户" />
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="用户状态">
           <el-radio-group v-model="temp.status">
             <el-radio :label="0">禁用</el-radio>
             <el-radio :label="1">正常</el-radio>
@@ -160,13 +166,16 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { getList } from '@/api/link'
+import { getList } from '@/api/user'
 import { deepClone } from '@/utils'
 
 const _temp = {
   id: '',
-  title: '',
-  link: '',
+  username: '',
+  truename: '',
+  role: [],
+  type: '管理员',
+  email: '',
   status: 1
 }
 
@@ -176,102 +185,129 @@ export default {
   },
   data() {
     return {
-      total: 0,
-      list: [],
-      menus: [],
-      listLoading: true,
+      people: [],
+      options_academy: [
+        { value: '选项1', label: '计算机学院' },
+        { value: '选项2', label: '农学院' },
+        { value: '选项3', label: '人文学院' },
+        { value: '选项4', label: '工程学院' },
+        { value: '选项5', label: '理学院' },
+        { value: '选项6', label: '管理学院' },
+        { value: '选项7', label: '医学院' },
+        { value: '选项8', label: '外国语学院' },
+        { value: '选项9', label: '法学院' },
+        { value: '选项10', label: '教育学院' },
+        { value: '选项11', label: '艺术学院' }
+      ],
       listQuery: {
         page: 1,
         limit: 20,
-        keyword: undefined
+        statuscourse: undefined,
+        statusempty: undefined,
+        value_academy: undefined,
+        person: undefined,
+        value_score: undefined,
+        value_time: undefined,
+        keywordid: '',
+        keywordname: ''
       },
-      temp: Object.assign({}, _temp),
+      total: 0,
+      list: [],
+      listLoading: true,
       dialogVisible: false,
       dialogType: 'create',
-      loading: false
+      temp: Object.assign({}, _temp),
+      loading:false
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
-    search() {
-      this.fetchData()
-    },
-    refresh() {
-      this.listQuery = {
-        page: 1,
-        limit: 20,
-        keyword: undefined
-      }
-      this.fetchData()
-    },
-    fetchData() {
+    loadAll() {
+                return [
+                  { "value": "刘大江" },
+                  { "value": "冯永" },
+                  { "value": "但敬佩" },
+                  { "value": "叶春晓" }
+                ];
+              },
+    async fetchData() {
       this.listLoading = true
-      getList(this.listQuery).then(response => {
+       getList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false
       })
     },
-    resetTemp() {
-      this.temp = Object.assign({}, _temp)
+    changeStatus(status, scope) {
+      scope.row.status = status
     },
-    add() {
+    resetTemp() {
+      this.temp = deepClone(_temp)
+    },
+    create() {
       this.resetTemp()
       this.dialogVisible = true
       this.dialogType = 'create'
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     edit(scope) {
-      this.resetTemp()
+      this.temp = Object.assign({}, scope.row)
       this.dialogVisible = true
-      this.dialogType = 'modify'
-      this.temp = deepClone(scope.row)
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      this.dialogType = '查看'
     },
-    changeStatus(value, scope) {
-      setTimeout(() => {
-        this.list[scope.$index].status = value
-        this.$message({
-          message: '更新成功',
-          type: 'success'
-        })
-      }, 300)
+    async search() {
+      this.listQuery.page = 1
+      this.fetchData()
     },
-    del(scope) {
-      this.$confirm('确认删除该条数据吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        setTimeout(() => {
-          this.list.splice(scope.$index, 1)
-          this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-        }, 300)
-      })
-    },
-    submit() {
-      if (this.loading) {
-        return
+    async refresh() {
+      this.listQuery = {
+        page: 1,
+        limit: 20,
+        statuscourse: undefined,
+        statusempty: undefined,
+        value_academy: undefined,
+        person: undefined,
+        value_score: undefined,
+        value_time: undefined,
+        keywordid: '',
+        keywordname: ''
       }
-      this.loading = true
-      setTimeout(() => {
-        this.$message({
-          message: '提交成功',
-          type: 'success'
-        })
-        this.dialogVisible = false
-        this.loading = false
-      }, 300)
+      this.fetchData()
+    },
+    async submit() {
+      const temp = Object.assign({}, this.temp)
+      // Save logic
+      this.dialogVisible = false
+      this.fetchData()
     }
   }
 }
 </script>
+
+<style scoped>
+.filter-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  margin-right: 20px;
+}
+
+.w-200 {
+  width: 200px;
+}
+
+.app-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+</style>
