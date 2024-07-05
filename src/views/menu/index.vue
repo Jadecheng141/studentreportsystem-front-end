@@ -2,22 +2,23 @@
   <el-table
     :data="tableData"
     style="width: 100%; height: 100vh;"
-    border>
+    border
+  >
     <el-table-column
       prop="day"
       label=" "
       width="50"
       align="center"
-      :min-width="100">
-    </el-table-column>
+      :min-width="100"
+    />
     <el-table-column
       v-for="(day, index) in weekDays"
       :key="'day-' + index"
       :label="day"
       width="70"
       align="center"
-      :min-width="120">
-    </el-table-column>
+      :min-width="120"
+    />
   </el-table>
 </template>
 
@@ -34,9 +35,9 @@ export default {
         { day: '5' },
         { day: '6' }
       ]
-    };
+    }
   }
-};
+}
 </script>
 
 <style scoped>
