@@ -2,26 +2,26 @@
   <div class="app-container">
     <div class="filter-container1">
       <el-select
-        v-model="listQuery.statuscourse"
+        v-model="listQuery.status"
         size="small"
         placeholder="课程状态"
         clearable
         class="filter-item"
       >
-        <el-option label="可选" :value="1" />
-        <el-option label="不可选" :value="0" />
+        <el-option label="可选" :value="'已开始'" />
+        <el-option label="不可选" :value="'未开始'" />
       </el-select>
       <el-select
-        v-model="listQuery.statusempty"
+        v-model="listQuery.filled"
         size="small"
         placeholder="是否选满"
         clearable
         class="filter-item"
       >
-        <el-option label="是" :value="1" />
-        <el-option label="否" :value="0" />
+        <el-option label="是" :value="true" />
+        <el-option label="否" :value="false" />
       </el-select>
-      <el-select v-model="listQuery.value_academy" size="small" placeholder="开课学院" class="filter-item">
+      <el-select v-model="listQuery.institution" size="small" placeholder="开课学院" class="filter-item">
         <el-option
           v-for="item in options_academy"
           :key="item.value"
@@ -32,11 +32,11 @@
       <el-autocomplete
         class="inline-input"
         size="small"
-        v-model="listQuery.person"
+        v-model="listQuery.teacherName"
         :fetch-suggestions="querySearch"
         placeholder="课程负责人"
       ></el-autocomplete>
-      <el-select v-model="listQuery.value_score" size="small" placeholder="学分" class="filter-item">
+      <el-select v-model="listQuery.score" size="small" placeholder="学分" class="filter-item">
         <el-option
           v-for="item in options_score"
           :key="item.value"
@@ -44,12 +44,11 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-select v-model="listQuery.value_time" size="small" placeholder="学时" class="filter-item">
+      <el-select v-model="listQuery.time" size="small" placeholder="学时" class="filter-item">
         <el-option
           v-for="item in options_time"
           :key="item.value"
-          :label="item.label"
-          :value="item.value">
+          :label="item.label">
         </el-option>
       </el-select>
       <div class="button-container">
@@ -65,14 +64,14 @@
     </div>
     <div class="filter-container2">
       <el-input
-        v-model="listQuery.keywordid"
+        v-model="listQuery.courseId"
         size="small"
         placeholder="请输入课程编号"
         clearable
         class="filter-item w-200"
       />
       <el-input
-        v-model="listQuery.keywordname"
+        v-model="listQuery.courseName"
         size="small"
         placeholder="请输入课程名称"
         clearable
@@ -133,15 +132,25 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.person }}
+          {{ scope.row.teacherName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="课程类型"
+        width="100"
+        align="center"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.courseType }}
         </template>
       </el-table-column>
       <el-table-column
         label="总课时"
+        width="130"
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.total_hours }}
+          {{ scope.row.time }}
         </template>
       </el-table-column>
       <el-table-column
@@ -168,8 +177,8 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span :class="{'status-label': true, 'available': scope.row.status === 1, 'not-available': scope.row.status === 0}">
-            {{ scope.row.status === 1 ? '可选' : '不可选' }}
+          <span :class="{'status-label': true, 'available': scope.row.status === '已开始', 'not-available': scope.row.status === '未开始'}">
+            {{ scope.row.status === '已开始' ? '可选' : '不可选' }}
           </span>
         </template>
       </el-table-column>
@@ -187,13 +196,6 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="fetchData"
-    />
     <el-dialog
       :visible.sync="dialogVisible"
       :title="dialogType === '编辑' ? '编辑课程信息' : '查看课程信息'"
@@ -232,21 +234,22 @@
   </div>
 </template>
 
-
 <script>
 import Pagination from '@/components/Pagination'
 import { deepClone } from '@/utils'
+import { getlist, searchCourses } from '@/api/s_check_course'
 
 const _temp = {
   courseId: '',
   courseName: '',
   institution: '',
-  person: '',
-  total_hours: '',
+  status: '',
+  teacherName: '',
+  time:'',
   score: '',
-  semester: '',
-  introduction: '',
-  status: 1
+  semister:'',
+  courseType:'',
+  filled:''
 }
 
 export default {
@@ -282,16 +285,16 @@ export default {
         { value: '艺术学院', label: '艺术学院' }
       ],
       listQuery: {
-        page: 1,
-        limit: 20,
-        statuscourse: undefined,
-        statusempty: undefined,
-        value_academy: undefined,
-        person: undefined,
-        value_score: undefined,
-        value_time: undefined,
-        keywordid: '',
-        keywordname: ''
+        courseId: '',
+        courseName: '',
+        institution: '',
+        status: '',
+        teacherName: '',
+        time:'',
+        score: '',
+        semister:'',
+        courseType:'',
+        filled: null // 设置为 null 以确保其为布尔值或 null
       },
       total: 0,
       list: [],
@@ -308,16 +311,18 @@ export default {
   },
   methods: {
     async fetchData() {
-      // 模拟数据
-      this.list = [
-        { courseId: 'C001', courseName: '计算机基础', institution: '计算机学院', person: '刘大江', total_hours: 32, score: 3, semester: '大一春季学期', introduction: 'This course introduces the basics of computer science.', status: 1 },
-        { courseId: 'C002', courseName: '农学概论', institution: '农学院', person: '冯永', total_hours: 24, score: 2, semester: '大一春季学期', introduction: 'This course introduces the basics of agriculture.', status: 1 },
-        { courseId: 'C003', courseName: '文学赏析', institution: '人文学院', person: '但敬佩', total_hours: 16, score: 1, semester: '大一春季学期', introduction: 'This course introduces the basics of literature appreciation.', status: 0 },
-        { courseId: 'C004', courseName: '工程力学', institution: '工程学院', person: '叶春晓', total_hours: 32, score: 3, semester: '大一春季学期', introduction: 'This course introduces the basics of engineering mechanics.', status: 1 }
-      ];
-      this.total = this.list.length;
-      this.filteredList = this.list;
-      this.listLoading = false;
+      this.listLoading = true;
+      try {
+        const response = await getlist();
+        console.log('Fetched Data:', response.data); // 打印返回的数据
+        this.list = response.data;
+        this.filteredList = this.list;
+        this.total = response.data.total;
+      } catch (error) {
+        console.error('Error fetching course list:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
     resetTemp() {
       this.temp = Object.assign({}, _temp)
@@ -332,38 +337,35 @@ export default {
       this.dialogType = '查看'
       this.dialogVisible = true
     },
-    search() {
-      this.filterList()
+    async search() {
+      this.fetchFilteredData()
     },
-    refresh() {
+    async refresh() {
       this.listQuery = {
-        page: 1,
-        limit: 20,
-        statuscourse: undefined,
-        statusempty: undefined,
-        value_academy: undefined,
-        person: undefined,
-        value_score: undefined,
-        value_time: undefined,
-        keywordid: '',
-        keywordname: ''
+        courseId: '',
+        courseName: '',
+        institution: '',
+        status: '',
+        teacherName: '',
+        time:'',
+        score: '',
+        semister:'',
+        courseType:'',
+        filled: null
       }
-      this.filteredList = this.list;
+      await this.fetchData()
     },
-    filterList() {
-      this.filteredList = this.list.filter(item => {
-        return (
-          (this.listQuery.statuscourse === undefined || item.status === this.listQuery.statuscourse) &&
-          (this.listQuery.statusempty === undefined || (this.listQuery.statusempty === 1 ? item.selected_students === item.capacity : item.selected_students !== item.capacity)) &&
-          (!this.listQuery.value_academy || item.institution.includes(this.listQuery.value_academy)) &&
-          (!this.listQuery.person || item.person.includes(this.listQuery.person)) &&
-          (this.listQuery.value_score === undefined || item.score === parseFloat(this.listQuery.value_score)) &&
-          (this.listQuery.value_time === undefined || item.total_hours === parseFloat(this.listQuery.value_time)) &&
-          (!this.listQuery.keywordid || item.courseId.includes(this.listQuery.keywordid)) &&
-          (!this.listQuery.keywordname || item.courseName.includes(this.listQuery.keywordname))
-        );
-      });
-      this.total = this.filteredList.length;
+    async fetchFilteredData() {
+      this.listLoading = true;
+      try {
+        const response = await searchCourses(this.listQuery);
+        this.filteredList = response.data.items;
+        this.total = response.data.total;
+      } catch (error) {
+        console.error('Failed to fetch filtered data:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
     querySearch(queryString, cb) {
       const results = this.people.filter(people => {
@@ -377,7 +379,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .filter-container1, .filter-container2 {
