@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 import axios from 'axios'
 
-export function getlist(data) {
-  return axios.get('/api/coursemanage', data);
+export function getlist() {
+  return axios.get('/api/StuInfo');
 }
 export function searchCourses(query) {
   const formData = new FormData();
@@ -15,23 +15,21 @@ export function searchCourses(query) {
   if (formData.has('filled')) {
     formData.set('filled', formData.get('filled') === 'true');
   }
-  return axios.post('/api/coursemanage/courseselect', formData, {
+  return axios.post('/api/StuInfo/filterTeachers', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   });
 }
-export function detailCourses(courseId) {
+
+export function detailCourses(teacherId) {
   const formData = new FormData();
   // Add courseId to FormData
-  formData.append('courseId', courseId);
+  formData.append('teacherId', teacherId);
 
-  return axios.post('/api/coursemanage/coursedetail', formData, {
+  return axios.post('/api/StuInfo/teacherDetails', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   });
 }
-
-
-

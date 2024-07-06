@@ -1,17 +1,35 @@
-
 <template>
   <el-container>
     <!-- 侧边栏 -->
     <el-aside width="500px" class="aside">
-      <div>
-        <h3 class="text">选中的信息：</h3>
-        <ul>
-          <li v-for="(row, index) in savedRows" :key="index" class="saved-row">
-            日期: {{ row.date }} 姓名: {{ row.name }}
-            <el-button type="danger" @click="removeSavedRow(index, row)" class="delete-button">删除</el-button>
-          </li>
-        </ul>
-      </div>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>选中的信息</span>
+        </div>
+        <el-table
+          :data="savedRows"
+          style="width: 100%">
+          <el-table-column
+            prop="courseId"
+            label="课程编码"
+            width="120"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            prop="courseName"
+            label="名称"
+            align="center">
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            width="100"
+            align="center">
+            <template slot-scope="scope">
+              <el-button type="danger" @click="removeSavedRow(scope.$index, scope.row)" class="delete-button">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </el-aside>
 
     <!-- 主内容 -->
@@ -33,41 +51,55 @@
             width="55">
           </el-table-column>
           <el-table-column
-                      prop="date"
-                      label="课程编码"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="name"
-                      label="课程名称"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="score"
-                      label="学分"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="place"
-                      label="校区"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="type"
-                      label="课程类别"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="setting"
-                      label="课程性质"
-                      width="120">
-                    </el-table-column>
-                    <el-table-column
-                      prop="situation"
-                      label="选择情况"
-                      show-overflow-tooltip>
-                    </el-table-column>
-          <!-- 根据实际需要添加其他列 -->
+            prop="courseId"
+            label="课程编码"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="courseName"
+            label="课程名称"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="score"
+            label="学分"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="classRoomNo"
+            label="教室编号"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="courseType"
+            label="课程类型"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="currentNumOfStu"
+            label="当前学生人数"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="ceilingOfPersonnel"
+            label="人数上限"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="status"
+            label="状态"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="teacherName"
+            label="教师姓名"
+            width="120">
+          </el-table-column>
+          <el-table-column
+            prop="introduction"
+            label="课程简介"
+            width="200">
+          </el-table-column>
         </el-table>
         <div class="button-group">
           <el-button @click="saveSelection()">确定选择</el-button>
@@ -79,7 +111,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { getCourses, getSelectedCourses, saveSelectedCourses, deleteCourse } from '@/api/selectcourse';
 
 export default {
   data() {
@@ -94,15 +126,24 @@ export default {
     this.loadSavedRows();
   },
   methods: {
-    fetchTableData() {
-      axios.get('http://localhost:8080/api/table-data') // 替换为实际的Spring Boot API端点
-        .then(response => {
-          this.tableData = response.data;
-          this.syncTableSelection(); // 同步保存的行与表格选择状态
-        })
-        .catch(error => {
-          console.error('获取表格数据出错:', error);
-        });
+    async fetchTableData() {
+      try {
+        const response = await getCourses();
+        this.tableData = response.data;
+         console.log('response:',response.data);
+        this.syncTableSelection(); // 同步保存的行与表格选择状态
+      } catch (error) {
+        console.error('获取表格数据出错:', error);
+      }
+    },
+    async loadSavedRows() {
+      try {
+        const response = await getSelectedCourses();
+        this.savedRows = response.data;
+        this.syncTableSelection(); // 同步保存的行与表格选择状态
+      } catch (error) {
+        console.error('加载已选课程出错:', error);
+      }
     },
     toggleSelection(rows) {
       if (rows) {
@@ -116,25 +157,36 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    saveSelection() {
-      // 如果需要，实现保存逻辑到后端
-      // 这里仅作为演示，在本地更新保存的行数据
-      this.multipleSelection.forEach(row => {
-        if (!this.isRowSaved(row)) {
-          this.savedRows.push(row);
-        }
-      });
-      this.syncTableSelection();
+    async saveSelection() {
+      try {
+        const selectedCourseIds = this.multipleSelection.map(row => row.courseId);
+        await saveSelectedCourses(selectedCourseIds);
+        this.multipleSelection.forEach(row => {
+          if (!this.isRowSaved(row)) {
+            this.savedRows.push(row);
+          }
+        });
+        this.syncTableSelection();
+        this.storeSavedRows(); // 更新本地存储
+      } catch (error) {
+        console.error('保存选中的课程出错:', error);
+      }
+    },
+    async removeSavedRow(index, row) {
+      try {
+        await deleteCourse(row.courseId);
+        this.savedRows.splice(index, 1);
+        this.storeSavedRows(); // 更新本地存储
+        this.$refs.multipleTable.toggleRowSelection(row, false);
+      } catch (error) {
+        console.error('删除选中的课程出错:', error);
+      }
     },
     isRowSaved(row) {
-      return this.savedRows.some(savedRow => savedRow.date === row.date && savedRow.name === row.name);
+      return this.savedRows.some(savedRow => savedRow.courseId === row.courseId);
     },
-    loadSavedRows() {
-      const savedRows = localStorage.getItem('savedRows');
-      if (savedRows) {
-        this.savedRows = JSON.parse(savedRows);
-      }
-      this.syncTableSelection();
+    storeSavedRows() {
+      localStorage.setItem('savedRows', JSON.stringify(this.savedRows));
     },
     syncTableSelection() {
       this.$nextTick(() => {
@@ -142,21 +194,17 @@ export default {
           this.$refs.multipleTable.toggleRowSelection(row, true);
         });
       });
-    },
-    removeSavedRow(index, row) {
-      this.savedRows.splice(index, 1);
-      localStorage.setItem('savedRows', JSON.stringify(this.savedRows));
-      this.$refs.multipleTable.toggleRowSelection(row, false);
     }
   }
 };
 </script>
+
 <style>
 .el-container {
   font-family: Arial, sans-serif;
 }
-.mytable{
-  top:-8px;
+.mytable {
+  top: -20px;
 }
 .aside {
   background-color: #f5f7fa;
@@ -179,7 +227,7 @@ export default {
   margin-top: 20px;
 }
 
-.button{
+.button {
   border-radius: 20px;
   width: 120px;
   background-image: linear-gradient(to bottom right, white, LightBlue);
@@ -198,6 +246,15 @@ export default {
   margin-bottom: 10px;
   border-radius: 4px;
   height: 50px;
+}
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-info span {
+  margin-bottom: 5px;
 }
 
 .delete-button {
@@ -226,9 +283,11 @@ export default {
   line-height: 160px;
   padding: 20px;
 }
-.text{
-  margin-top:1px;
+
+.text {
+  margin-top: 1px;
 }
+
 body > .el-container {
   margin-bottom: 40px;
 }
@@ -249,5 +308,12 @@ body > .el-container {
 .el-table .el-checkbox__inner:hover, .el-table .el-checkbox__inner.is-checked {
   background-color: #409eff;
   border-color: #409eff;
+}
+
+.box-card {
+  width: 100%;
+}
+.clearfix{
+  height: 20px;
 }
 </style>
