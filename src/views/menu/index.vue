@@ -2,21 +2,23 @@
   <el-table
     :data="tableData"
     style="width: 100%; height: 100vh;"
-    border>
+    border
+  >
     <el-table-column
       prop="time"
       label="时间"
       width="100"
       align="center"
-      :min-width="100">
-    </el-table-column>
+      :min-width="100"
+    />
     <el-table-column
       v-for="(day, index) in weekDays"
       :key="'day-' + index"
       :label="day"
       width="140"
       align="center"
-      :min-width="140">
+      :min-width="140"
+    >
       <template slot-scope="scope">
         <div v-if="scope.row[day]">
           <div>{{ scope.row[day].subject }}</div>
@@ -40,9 +42,9 @@ export default {
         { time: '14:00 - 15:00', '星期一': { subject: '生物', teacher: '钱老师' }, '星期二': { subject: '化学', teacher: '赵老师' }, '星期三': { subject: '英语', teacher: '李老师' }, '星期四': { subject: '生物', teacher: '钱老师' }, '星期五': { subject: '数学', teacher: '张老师' } },
         { time: '15:10 - 16:10', '星期一': { subject: '英语', teacher: '李老师' }, '星期二': { subject: '生物', teacher: '钱老师' }, '星期三': { subject: '化学', teacher: '赵老师' }, '星期四': { subject: '数学', teacher: '张老师' }, '星期五': { subject: '物理', teacher: '王老师' } }
       ]
-    };
+    }
   }
-};
+}
 </script>
 
 <style scoped>
