@@ -6,78 +6,101 @@
         <div class="left-column">
           <div class="form-group">
             <label for="name">姓名:</label>
-            <input type="text" v-model="form.name" id="name" required />
+            <input id="name" v-model="form.name" type="text" required>
           </div>
           <div class="form-group">
             <label for="gender">性别:</label>
-            <select v-model="form.gender" id="gender" required>
+            <select id="gender" v-model="form.gender" required>
               <option value="male">男</option>
               <option value="female">女</option>
             </select>
           </div>
           <div class="form-group">
             <label for="dob">出生日期:</label>
-            <input type="date" v-model="form.dob" id="dob" required />
+            <input id="dob" v-model="form.dob" type="date" required>
           </div>
           <div class="form-group">
             <label for="contact">联系方式:</label>
-            <input type="text" v-model="form.contact" id="contact" required />
+            <input id="contact" v-model="form.contact" type="text" required>
           </div>
           <div class="form-group">
             <label for="address">家庭住址:</label>
-            <input type="text" v-model="form.address" id="address" required />
+            <input id="address" v-model="form.address" type="text" required>
           </div>
           <div class="form-group">
             <label for="college">学院:</label>
-            <input type="text" v-model="form.college" id="college" required />
+            <input id="college" v-model="form.college" type="text" required>
           </div>
           <div class="form-group">
             <label for="class">班级:</label>
-            <input type="text" v-model="form.class" id="class" required />
-          </div>
-          <div class="form-group">
-            <label for="studentId">学号:</label>
-            <input type="text" v-model="form.studentId" id="studentId" required />
+            <input id="class" v-model="form.class" type="text" required>
           </div>
           <div class="form-group">
             <label for="idCard">身份证号:</label>
-            <input type="text" v-model="form.idCard" id="idCard" required />
+            <input id="idCard" v-model="form.idCard" type="text" required>
           </div>
           <div class="form-group">
             <label for="email">邮箱:</label>
-            <input type="email" v-model="form.email" id="email" required />
+            <input id="email" v-model="form.email" type="email" required>
           </div>
         </div>
         <div class="right-column">
           <div class="form-group">
-            <label for="photo">照片上传:</label>
-            <input type="file" @change="onFileChange" id="photo" accept="image/*" required />
+            <!-- <el-upload
+              class="upload-demo"
+              action=""
+              :http-request="uploadFile"
+              :limit="1"
+              :show-file-list="false"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload> -->
+            <el-upload
+              class="avatar-uploader"
+              action=" "
+              :http-request="uploadFile"
+              :show-file-list="false"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+
           </div>
           <div class="form-group">
             <label for="fatherName">父亲姓名:</label>
-            <input type="text" v-model="form.fatherName" id="fatherName" required />
+            <input id="fatherName" v-model="form.fatherName" type="text" required>
           </div>
           <div class="form-group">
             <label for="fatherContact">父亲联系电话:</label>
-            <input type="text" v-model="form.fatherContact" id="fatherContact" required />
+            <input id="fatherContact" v-model="form.fatherContact" type="text" required>
           </div>
           <div class="form-group">
             <label for="motherName">母亲姓名:</label>
-            <input type="text" v-model="form.motherName" id="motherName" required />
+            <input id="motherName" v-model="form.motherName" type="text" required>
           </div>
           <div class="form-group">
             <label for="motherContact">母亲联系电话:</label>
-            <input type="text" v-model="form.motherContact" id="motherContact" required />
+            <input id="motherContact" v-model="form.motherContact" type="text" required>
           </div>
           <div class="form-group">
             <label for="emergencyContactName">紧急联系人姓名:</label>
-            <input type="text" v-model="form.emergencyContactName" id="emergencyContactName" required />
+            <input id="emergencyContactName" v-model="form.emergencyContactName" type="text" required>
           </div>
           <div class="form-group">
             <label for="emergencyContactNumber">紧急联系人联系电话:</label>
-            <input type="text" v-model="form.emergencyContactNumber" id="emergencyContactNumber" required />
+            <input id="emergencyContactNumber" v-model="form.emergencyContactNumber" type="text" required>
           </div>
-          <button type="submit" class="submit-button">提交</button>
+          <div>
+            <div class="captcha-container">
+              <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha">
+              <button @click="refreshCaptcha">刷新验证码</button>
+            </div>
+            <form @submit.prevent="submitInfo">
+              <input v-model="captchaInput" placeholder="输入验证码" required>
+            </form>
+          </div>
+
+          <button type="submit" class="submit-button" @click="submitInfo">提交</button>
         </div>
       </form>
     </div>
@@ -85,6 +108,7 @@
 </template>
 
 <script>
+import { submitReportInfo } from '@/api/reportinfo'
 export default {
   data() {
     return {
@@ -96,7 +120,6 @@ export default {
         address: '',
         college: '',
         class: '',
-        studentId: '',
         idCard: '',
         email: '',
         fatherName: '',
@@ -105,37 +128,114 @@ export default {
         motherContact: '',
         emergencyContactName: '',
         emergencyContactNumber: '',
-        photo: null,
-      }
-    };
+        photo: null
+      },
+      selectedFile: null,
+      convertedBlob: null, // 转换后的 Blob 对象
+      imageUrl: null, // 用于保存图片的 URL 以便预览 // 用于保存选中的图片
+      captchaUrl: '/api/information/captcha', // 初始验证码 URL，指向后端生成验证码的接口
+      captchaInput: '' // 用户输入的验证码
+    }
   },
   methods: {
-    onFileChange(event) {
-      this.form.photo = event.target.files[0];
+    refreshCaptcha() {
+      // 加上时间戳以防止缓存
+      this.captchaUrl = '/api/information/captcha?' + new Date().getTime()
     },
-    async submitForm() {
-      const formData = new FormData();
-      for (const key in this.form) {
-        formData.append(key, this.form[key]);
-      }
-
-      try {
-        const response = await fetch('https://your-backend-endpoint.com/submit', {
-          method: 'POST',
-          body: formData
-        });
-        if (response.ok) {
-          alert('表单提交成功');
+    handleAvatarSuccess(file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+      console.log('imageurl:', this.imageurl)
+    },
+    uploadFile(file) {
+      const formData = new FormData()
+      formData.append('file', file.file)
+      this.previewImage(file.file)
+      this.$axios.post('/information/upload', formData).then(response => {
+        if (response.status === 'success') {
+          this.$message.success('照片上传成功')
         } else {
-          alert('表单提交失败');
+          this.$message.error('照片上传失败')
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('表单提交失败');
+      }).catch(error => {
+        // 处理错误
+        console.error(error)
+        this.$message.error('照片上传失败')
+      })
+    },
+
+    onFileChange(event) {
+      const file = event.target.files[0] // 获取用户选择的文件
+      console.log('照片:', event.target.files[0])
+      if (file) {
+        const file = event.target.files[0] // 获取用户选择的文件
+        if (file) {
+          this.selectedFile = file // 将文件保存到数据中
+          this.previewImage(file) // 预览图片
+          this.fileToBlob(this.selectedFile)
+            .then((blob) => {
+              this.convertedBlob = blob // 将转换后的 Blob 对象保存到组件的数据属性中
+              console.log('Converted Blob:', blob)
+            })
+            .catch((error) => {
+              console.error('Error converting file to blob:', error)
+            })
+        }
       }
+    },
+    previewImage(file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.imageUrl = e.target.result // 将图片的 base64 URL 保存到数据中
+        console.log('imageUrl:', e.target.result)
+      }
+      reader.readAsDataURL(file) // 将文件读取为 Data URL
+    },
+    async submitInfo() {
+      if (this.imageUrl === null) {
+        this.$message.error('请先上传照片')
+        return
+      }
+      const formData = new FormData()
+      console.log('studentName', this.form.name)
+      formData.append('studentName', this.form.name)
+      formData.append('gender', this.form.gender)
+      formData.append('phoneNumber', this.form.contact)
+      formData.append('nativeSpace', this.form.address)
+      formData.append('academy', this.form.college)
+      formData.append('classNo', this.form.class)
+      formData.append('idNumber', this.form.idCard)
+      formData.append('fatherName', this.form.fatherName)
+      formData.append('motherName', this.form.motherName)
+      formData.append('emergencyContactName', this.form.emergencyContactName)
+      formData.append('emergencyContactTel', this.form.emergencyContactNumber)
+      formData.append('captcha', this.captchaInput)
+      console.log('上传报道信息:', formData)
+
+      // 提交报道信息
+      try {
+        const reportResponse = await submitReportInfo(formData)
+        console.log('报道信息提交成功:', reportResponse.data)
+        this.$message.success('报道信息提交成功')
+      } catch (error) {
+        console.error('报道信息提交失败:', error)
+        this.$message.error('报道信息提交失败，请重试')
+        return
+      }
+    //   submitReportInfo(formData)
+    //     .then(response => {
+    //       if (response.data.code === 200) {
+    //         this.$message.success('上传报道信息成功')
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.error('上传报道信息失败:', error)
+    //       this.$message.error('上传报道信息失败')
+    //     })
     }
+
   }
-};
+}
+
 </script>
 
 <style scoped>
@@ -162,6 +262,29 @@ h1 {
 form {
   display: contents;
 }
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 
 .left-column,
 .right-column {

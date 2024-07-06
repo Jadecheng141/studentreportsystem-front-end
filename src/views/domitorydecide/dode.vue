@@ -34,7 +34,7 @@
             label="入住情况"
           >
             <template slot-scope="scope">
-              <span :class="{'status-dot': true, 'available': scope.row.isFull, 'full': !scope.row.isFull}" />
+              <span :class="{'status-dot': true, 'available': !scope.row.isFull, 'full': scope.row.isFull}" />
             </template>
           </el-table-column>
           <el-table-column label="查看信息">
@@ -177,6 +177,7 @@ export default {
     handleSelectionChange(selection) {
       // 处理选择变化事件
       if (selection.length > 0) {
+        console.log('selection:', selection)
         this.selectedDorm = selection[0]
       } else {
         this.selectedDorm = null
@@ -196,9 +197,9 @@ export default {
       formData.append('dormNo', this.selectedDorm.dormno)
       formData.append('roomNo', this.selectedDorm.roomno)
       console.log('selectdorm:', formData)
-      submitSelectDorm(FormData)
+      submitSelectDorm(formData)
         .then(response => {
-          this.$message.error('选择宿舍成功')
+          this.$message.success('选择宿舍成功')
         })
         .catch(error => {
           console.error('选择宿舍失败:', error)
