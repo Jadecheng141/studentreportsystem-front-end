@@ -14,27 +14,40 @@ const routes = [
     }]
   },
   {
+    path: '/b',
+    component: 'Layout',
+    redirect: '/b/baodao',
+    name: 'B',
+    alwaysShow: true,
+    meta: { title: '报道信息', icon: 'el-icon-help' },
+    children: [
+      {
+        path: '/b/baodao',
+        name: 'Baodao',
+        component: 'views/information/information',
+        meta: { title: '基本信息' }
+      },
+      {
+        path: '/b/domitorydecide',
+        name: 'Domitorydecide',
+        component: 'views/domitorydecide/dode',
+        meta: { title: '宿舍确认' }
+      }
+    ]
+  },
+  /* {
       path: '/b',
       component: 'Layout',
-      redirect: '/b/baodao',
-      name: 'B',
-      alwaysShow:true,
-      meta: { title: '报道信息', icon: 'el-icon-help' },
+      alwaysShow: true,
       children: [
         {
           path: '/b/baodao',
-          name: 'Baodao',
-          component: 'views/information/information',
-          meta: { title: '基本信息' }
-        },
-        {
-          path: '/b/domitorydecide',
-          name: 'Domitorydecide',
-          component: 'views/domitorydecide/dode',
-          meta: { title: '宿舍确认' }
+          name: 'B',
+          component: 'views/information/studentmanager',
+          meta: { title: '报道信息', icon: 'el-icon-help' }
         }
       ]
-    },
+    }, */
   {
     path: '/ads',
     component: 'Layout',
@@ -69,64 +82,15 @@ const routes = [
     ]
   },
   /* {
-    path: '/nested',
+    path: '/ads',
     component: 'Layout',
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: '我的宿舍',
-      icon: 'el-icon-s-operation'
-    },
+    alwaysShow: true,
     children: [
       {
-        path: '/nested/menu1',
-        alwaysShow: true,
-        redirect: '/nested/menu1/menu1-1',
-        component: 'views/nested/menu1/index', // Parent router-view
-        name: 'Menu1',
-        meta: { title: '二级菜单' },
-        children: [
-          {
-            path: '/nested/menu1/menu1-1',
-            component: 'views/nested/menu1/menu1-1/index',
-            name: 'Menu1-1',
-            meta: { title: '三级菜单' }
-          },
-          {
-            path: '/nested/menu1/menu1-2',
-            alwaysShow: true,
-            redirect: 'noRedirect',
-            component: 'views/nested/menu1/menu1-2/index',
-            name: 'Menu1-2',
-            meta: { title: '三级菜单' },
-            children: [
-              {
-                path: '/nested/menu1/menu1-2/menu1-2-1',
-                component: 'views/nested/menu1/menu1-2/menu1-2-1/index',
-                name: 'Menu1-2-1',
-                meta: { title: '四级菜单' }
-              },
-              {
-                path: '/nested/menu1/menu1-2/menu1-2-2',
-                component: 'views/nested/menu1/menu1-2/menu1-2-2/index',
-                name: 'Menu1-2-2',
-                meta: { title: '四级菜单' }
-              }
-            ]
-          },
-          {
-            path: '/nested/menu1/menu1-3',
-            component: 'views/nested/menu1/menu1-3/index',
-            name: 'Menu1-3',
-            meta: { title: '三级菜单' }
-          }
-        ]
-      },
-      {
-        path: '/nested/menu2',
-        component: 'views/nested/menu2/index',
-        name: 'Menu2',
-        meta: { title: '二级菜单' }
+        path: '/ads/banner',
+        name: 'Ads',
+        component: 'views/banner/coursemanager',
+        meta: { title: '学校信息', icon: 'el-icon-help' }
       }
     ]
   }, */
@@ -143,6 +107,19 @@ const routes = [
       }
     ]
   },
+  /* {
+    path: '/nested',
+    component: 'Layout',
+    alwaysShow: true,
+    children: [
+      {
+        path: '/nested/domitory',
+        name: 'Domitory',
+        component: 'views/nested/doemanager',
+        meta: { title: '我的宿舍', icon: 'el-icon-s-operation' }
+      }
+    ]
+  }, */
   {
     path: '/site',
     component: 'Layout',
@@ -156,7 +133,19 @@ const routes = [
       }
     ]
   },
-
+  /* {
+    path: '/site',
+    component: 'Layout',
+    alwaysShow: true,
+    children: [
+      {
+        path: '/site/index',
+        name: 'Site',
+        component: 'views/site/teacher_dialogue',
+        meta: { title: '在线咨询', icon: 'el-icon-setting' }
+      }
+    ]
+  }, */
   {
     path: '/setting',
     component: 'Layout',
@@ -184,6 +173,19 @@ const routes = [
       }
     ]
   }
+  /* {
+    path: '/setting',
+    component: 'Layout',
+    alwaysShow: true,
+    children: [
+      {
+        path: '/setting/user',
+        name: 'Domitory',
+        component: 'views/user/teachermanager',
+        meta: { title: '我的课程', icon: 'el-icon-s-operation' }
+      }
+    ]
+  } */
 ]
 
 module.exports = [

@@ -1,7 +1,5 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import store from '@/store'
-import { getToken } from '@/utils/auth'
 
 const instance = axios.create({
   baseURL: ' /api', // 使用代理
@@ -25,20 +23,21 @@ const instance = axios.create({
 //   }
 // }
 instance.defaults.headers.post['Content-Type'] = 'multipart/form-data'
+instance.defaults.headers.get['Content-Type'] = 'multipart/form-data'
 // request interceptor
 instance.interceptors.request.use(
   config => {
     // do something before request is sent
-    if (!config.data) {
-      config.data = true
-      console.log('请求拦截:', config.headers)// 解决请求没有参数时添加不上Content-Type问题
-    }
-    if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
-    }
+    // if (!config.data) {
+    //   config.data = true
+    //   console.log('请求拦截:', config.headers)// 解决请求没有参数时添加不上Content-Type问题
+    // }
+    // if (store.getters.token) {
+    //   // let each request carry token
+    //   // ['X-Token'] is a custom headers key
+    //   // please modify it according to the actual situation
+    //   config.headers['X-Token'] = getToken()
+    // }
     return config
   },
   error => {

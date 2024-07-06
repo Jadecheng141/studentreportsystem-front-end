@@ -44,6 +44,7 @@ const actions = {
         .then((response) => {
           if (response.status === 200) {
             sessionStorage.setItem('role', response.data.role)
+            sessionStorage.setItem('username', response.data.username)
             commit('SET_NAME', response.data.username)
             commit('SET_ROLES', response.data.role)
             resolve(response)
@@ -60,13 +61,18 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      const formData = new FormData()
+      formData.append('emptyField', '') // 添加一个空字段
+      logout()
+        .then(() => {
+          resetRouter()
+          sessionStorage.clear() // 清除 sessionStorage 中的所有数据
+          commit('RESET_STATE')
+          resolve()
+        })
+        .catch((error) => {
+          reject(error)
+        })
     })
   }
 

@@ -32,7 +32,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://192.168.198.153:8080', // 后端地址
+        target: 'http://172.20.10.6:8080', // 后端地址
         changeOrigin: true,
         router: function (req) {
           delete req.headers.origin // 加上这个有效

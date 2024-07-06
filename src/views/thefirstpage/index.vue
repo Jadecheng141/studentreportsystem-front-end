@@ -1,187 +1,5 @@
-<!-- <template>
-  <div>
-    <img :src="staticImageUrl" alt="Static Image">
-    <div class="blue-rectangle"></div>
-    <div class="white-rectangle"></div>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      staticImageUrl: require('@/images/schoolmap.png')// 移除多余的分号
-    }
-  }
-}
-</script>
-
-<style lang="scss" scoped>
-img {
-  padding: 5px;
-  width: calc(60% - 10px); /* 60% of parent width minus padding */
-  height: calc(60% - 10px); /* 30% of parent height minus padding */
-  max-width: 58%; /* Ensure image does not exceed its container's width */
-  max-height: 40%; /* Ensure image does not exceed its container's height */
-}
-.blue-rectangle {
-  position: absolute;
-   border-radius: 70px;
-  top: 80px;
-  right: 105px; /* Adjust the distance from the image */
-  width: 490px;
-  height: 80%;
-  background-image: linear-gradient(to bottom right, DodgerBlue, LightBlue);
-}
-.white-rectangle{
-  position: absolute;
-  border-radius: 60px;
-  top:100px;
-  right:125px;
-  width:450px;
-  height:75%;
-  background-color: aliceblue;
-}
-</style>
- -->
-<!-- <template>
-  <div>
-    <img :src="staticImageUrl" alt="Static Image" class="static-image">
-    <button onclick="">换一张</button>
-    <div
-      class="blue-rectangle"
-      :style="{
-        top: blueRectTop + 'px',
-        right: blueRectRight + 'px',
-        display: rectVisible ? 'block' : 'none'
-      }"
-    >
-      <div
-        class="white-rectangle"
-        :style="{
-          top: whiteRectTop + 'px',
-          right: whiteRectRight + 'px',
-          display: rectVisible ? 'block' : 'none'
-        }"
-      >
-        <h3
-          class="rectangle-title"
-          :style="{
-            top: titleTop + 'px',
-            left: titleLeft + 'px',
-            position: 'absolute'
-          }"
-        >
-          学校简介
-        </h3>
-        <img :src="schoolurl" alt="School Image" class="school-image">
-        <p
-          class="rectangle-text"
-          :style="{
-            top:textTop+'px',
-            left:textLeft+'px',
-            position:'absolute'
-          }"
-        >重庆大学是中央直管、教育部直属的全国重点大学。学校创办于1929年，提出建设“完备弘深之大学”的愿景，到20世纪40年代发展成为文理工商法医各学科齐全的综合性大学。</p>
-        <p
-            class="rectangle-text"
-            :style="{
-              top:textTop2+'px',
-              left:textLeft2+'px',
-              position:'absolute'
-            }"
-          >经过1952年全国院系调整，成为以工科为主的多科性大学。1960年被确定为全国重点大学。改革开放后，学校进行了全面的恢复调整和改革建设，成为一所以工为主、多学科协调发展的高校。</p>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      staticImageUrl: require('@/images/schoolmap.png'),
-      schoolurl: require('@/images/school.jpg'),
-      blueRectTop: 80,
-      blueRectRight: 105,
-      whiteRectTop: 20,
-      whiteRectRight: 20,
-      titleTop: 10,
-      titleLeft: 30,
-      textTop:300,
-      textleft:60,
-      textTop2:400,
-      textleft2:60,
-      rectVisible: true,
-    }
-  },
-  methods: {
-    toggleRectangles() {
-      this.rectVisible = !this.rectVisible;
-    },
-    moveRectangles(topOffset, rightOffset) {
-      this.blueRectTop += topOffset;
-      this.blueRectRight += rightOffset;
-      this.whiteRectTop += topOffset;
-      this.whiteRectRight += rightOffset;
-    },
-    moveText(topOffset, leftOffset) {
-      this.textTop += topOffset;
-      this.textLeft += leftOffset;
-    }
-  }
-}
-</script>
-
-<style lang="scss" scoped>
-.static-image {
-  position: absolute;
-  padding: 5px;
-  width: 60%;
-  height: 100%;
-}
-
-.school-image {
-  padding: 5px;
-  border-radius: 20px;
-  width: 300px;
-  height: 200px;
-  position: absolute;
-  top: 70px;
-  right: 70px;
-}
-
-.blue-rectangle {
-  position: absolute;
-  border-radius: 70px;
-  width: 490px;
-  height: 80%;
-  background-image: linear-gradient(to bottom right, DodgerBlue, LightBlue);
-}
-
-.white-rectangle {
-  position: absolute;
-  border-radius: 60px;
-  width: 450px;
-  height: 92%;
-  background-color: aliceblue;
-}
-
-.rectangle-title {
-  color: black;
-  font-size: 25px;
-}
-.rectangle-text {
-  color: black;
-  font-size: 17px;
-  width:80%;
-  text-indent: 2em;
-  left:50px;
-}
-</style>
- -->
 <template>
-  <div>
+  <div class="app-container">
     <!-- 包含按钮的容器 -->
     <div class="buttons-container">
       <!-- 切换按钮 -->
@@ -258,7 +76,7 @@ export default {
 export default {
   data() {
     return {
-      staticImageUrl: require('@/images/schoolmap.png'),
+      staticImageUrl: require('@/images/schoolmap.jpg'),
       rectangles: [
         {
           id: 'rectangle2',
@@ -331,8 +149,8 @@ export default {
   position: absolute;
   padding: 5px;
   width: 60%;
-  height: 95%;
-  top:70px;
+  height: 80%;
+  top:120px;
 }
 
 .school-image1 {
@@ -428,53 +246,3 @@ export default {
   margin: 0 5px;
 }
 </style>
-
-
-
-
-
-
-<!-- <template>
-   <div>
-     <button @click="toggleVisibility">Toggle Rectangle</button>
-
-     <div
-       class="blue-rectangle"
-       :style="{
-         top: blueRectTop + 'px',
-         right: blueRectRight + 'px',
-         display: rectVisible ? 'block' : 'none'
-       }"
-     >
-     </div>
-   </div>
- </template>
-
- <script>
- export default {
-   data() {
-     return {
-       blueRectTop: 80,
-       blueRectRight: 105,
-       rectVisible: true,
-     };
-   },
-   methods: {
-     toggleVisibility() {
-       this.rectVisible = !this.rectVisible;
-     },
-   },
- };
- </script>
-
- <style lang="scss" scoped>
- .blue-rectangle {
-   position: absolute;
-   width: 200px;
-   height: 100px;
-   background-color: blue;
-   top: 100px;
-   right: 100px;
- }
- </style>
- -->

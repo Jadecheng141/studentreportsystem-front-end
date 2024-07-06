@@ -92,6 +92,7 @@
         <div v-if="rectangle.image1" class="additional-image-container">
           <img :src="rectangle.image1" alt="Additional Image 1" class="additional-image">
         </div>
+        <button @click="downloadPdf(rectangle.pdfUrl)">下载 PDF</button>
       </div>
     </div>
   </div>
@@ -151,22 +152,38 @@ export default {
         }
       ],
       singlerec4: [
-        {
-          id: 'rectangle4',
-          title: '学校章程',
-          content: '这里填写学校章程的内容。',
-          top: 120,
-          right: 105
-        }
-      ],
+              {
+                id: 'rectangle4',
+                title: '关于我们',
+                content: '更多关于我们的信息',
+                pdfUrl: 'https://example.com/path/to/pdf' // 替换为实际的PDF文件URL
+              }
+            ],
       currentRectangle: 'rectangle1'
     }
   },
   methods: {
-    setCurrentRectangle(rectangleId) {
-      this.currentRectangle = rectangleId;
-    },
-  },
+      setCurrentRectangle(rectangleId) {
+        this.currentRectangle = rectangleId;
+      },
+      downloadPdf(pdfUrl) {
+        axios({
+          url: pdfUrl,
+          method: 'GET',
+          responseType: 'blob', // 重要：确保响应类型是 blob
+        }).then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'file.pdf'); // 设置下载文件的文件名
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }).catch((error) => {
+          console.error('下载PDF文件出错：', error);
+        });
+      }
+    }
 }
 </script>
 
@@ -381,13 +398,15 @@ export default {
   width: 60%;
 } */
 .wandtt{
+  border-radius: 10px;
   margin-top: 10px;
-  width:500px;
+  width:600px;
   margin-right: 40px;
 }
 .wandtw{
   margin-top: 10px;
-  width:500px;
+  width:600px;
+  height: 400px;
   margin-left: 40px;
   margin-right: 300px;
 }

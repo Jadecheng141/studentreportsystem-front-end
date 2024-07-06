@@ -2,26 +2,26 @@
   <div class="app-container">
     <div class="filter-container1">
       <el-select
-        v-model="listQuery.statuscourse"
+        v-model="listQuery.status"
         size="small"
         placeholder="课程状态"
         clearable
         class="filter-item"
       >
-        <el-option label="可选" :value="1" />
-        <el-option label="不可选" :value="0" />
+        <el-option label="可选" :value="'已开始'" />
+        <el-option label="不可选" :value="'未开始'" />
       </el-select>
       <el-select
-        v-model="listQuery.statusempty"
+        v-model="listQuery.filled"
         size="small"
         placeholder="是否选满"
         clearable
         class="filter-item"
       >
-        <el-option label="是" :value="1" />
-        <el-option label="否" :value="0" />
+        <el-option label="是" :value="true" />
+        <el-option label="否" :value="false" />
       </el-select>
-      <el-select v-model="listQuery.value_academy" size="small" placeholder="开课学院" class="filter-item">
+      <el-select v-model="listQuery.institution" size="small" placeholder="开课学院" class="filter-item">
         <el-option
           v-for="item in options_academy"
           :key="item.value"
@@ -32,12 +32,11 @@
       <el-autocomplete
         class="inline-input"
         size="small"
-        v-model="listQuery.person"
+        v-model="listQuery.teacherName"
         :fetch-suggestions="querySearch"
         placeholder="课程负责人"
-        @select="handleSelect"
       ></el-autocomplete>
-      <el-select v-model="listQuery.value_score" size="small" placeholder="学分" class="filter-item">
+      <el-select v-model="listQuery.score" size="small" placeholder="学分" class="filter-item">
         <el-option
           v-for="item in options_score"
           :key="item.value"
@@ -45,12 +44,11 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-select v-model="listQuery.value_time" size="small" placeholder="学时" class="filter-item">
+      <el-select v-model="listQuery.time" size="small" placeholder="学时" class="filter-item">
         <el-option
           v-for="item in options_time"
           :key="item.value"
-          :label="item.label"
-          :value="item.value">
+          :label="item.label">
         </el-option>
       </el-select>
       <div class="button-container">
@@ -66,14 +64,14 @@
     </div>
     <div class="filter-container2">
       <el-input
-        v-model="listQuery.keywordid"
+        v-model="listQuery.courseId"
         size="small"
         placeholder="请输入课程编号"
         clearable
         class="filter-item w-200"
       />
       <el-input
-        v-model="listQuery.keywordname"
+        v-model="listQuery.courseName"
         size="small"
         placeholder="请输入课程名称"
         clearable
@@ -92,7 +90,7 @@
     </div>
     <el-table
       v-loading="listLoading"
-      :data="list"
+      :data="filteredList"
       element-loading-text="Loading"
       border
       fit
@@ -107,7 +105,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.id }}
+          {{ scope.row.courseId }}
         </template>
       </el-table-column>
       <el-table-column
@@ -116,7 +114,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.username }}
+          {{ scope.row.courseName }}
         </template>
       </el-table-column>
       <el-table-column
@@ -125,7 +123,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.truename }}</span>
+          <span>{{ scope.row.institution }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -134,15 +132,25 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.type }}
+          {{ scope.row.teacherName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="课程类型"
+        width="100"
+        align="center"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.courseType }}
         </template>
       </el-table-column>
       <el-table-column
         label="总课时"
+        width="130"
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.email }}
+          {{ scope.row.time }}
         </template>
       </el-table-column>
       <el-table-column
@@ -151,39 +159,27 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.ip }}
+          {{ scope.row.score }}
         </template>
       </el-table-column>
       <el-table-column
-        label="选课人数"
+        label="开课学期"
         width="160"
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.last_time }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="开课地点"
-        width="160"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.created_at }}</span>
+          <span>{{ scope.row.semester }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="状态"
-        width="80"
+        width="100"
         align="center"
       >
         <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="changeStatus($event, scope)"
-          />
+          <span :class="{'status-label': true, 'available': scope.row.status === '已开始', 'not-available': scope.row.status === '未开始'}">
+            {{ scope.row.status === '已开始' ? '可选' : '不可选' }}
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -193,30 +189,16 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-button-group>
-            <el-button
-              type="primary"
-              size="mini"
-              @click="edit(scope)"
-            >
-              查看
-            </el-button>
-          </el-button-group>
+          <el-button type="primary" size="mini" @click="view(scope)">
+            查看
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="fetchData"
-    />
-
     <el-dialog
       :visible.sync="dialogVisible"
-      :title="dialogType ==='查看'"
+      :title="dialogType === '编辑' ? '编辑课程信息' : '查看课程信息'"
     >
       <el-form
         ref="dataForm"
@@ -224,43 +206,28 @@
         label-width="120px"
         label-position="right"
       >
-        <el-form-item label="用户名">
-          <el-input v-model="temp.username" placeholder="请输入用户名" />
+        <el-form-item label="课程编号">
+          <el-input v-model="temp.courseId" placeholder="请输入课程编号" disabled/>
         </el-form-item>
-        <el-form-item label="真实姓名">
-          <el-input v-model="temp.truename" placeholder="请输入真实姓名" />
+        <el-form-item label="课程名称">
+          <el-input v-model="temp.courseName" placeholder="请输入课程名称" disabled/>
         </el-form-item>
-        <el-form-item label="电子邮箱">
-          <el-input v-model="temp.email" placeholder="请输入电子邮箱" />
+        <el-form-item label="开课部门">
+          <el-input v-model="temp.institution" placeholder="请输入开课部门" disabled/>
         </el-form-item>
-        <el-form-item label="用户类型">
-          <el-radio-group v-model="temp.type">
-            <el-radio label="管理员">管理员</el-radio>
-            <el-radio label="编辑">编辑</el-radio>
-          </el-radio-group>
+        <el-form-item label="开课学期">
+          <el-input v-model="temp.semester" placeholder="请输入开课学期" disabled/>
         </el-form-item>
-        <el-form-item label="用户角色">
-          <el-checkbox-group v-model="temp.role">
-            <el-checkbox label="超级管理员" />
-            <el-checkbox label="编辑人员" />
-            <el-checkbox label="审核人员" />
-            <el-checkbox label="客服人员" />
-            <el-checkbox label="普通用户" />
-          </el-checkbox-group>
+        <el-form-item label="学分">
+          <el-input v-model="temp.score" placeholder="请输入学分" disabled/>
         </el-form-item>
-        <el-form-item label="用户状态">
-          <el-radio-group v-model="temp.status">
-            <el-radio :label="0">禁用</el-radio>
-            <el-radio :label="1">正常</el-radio>
-          </el-radio-group>
+        <el-form-item label="课程描述">
+          <el-input v-model="temp.introduction" placeholder="请输入课程描述" disabled/>
         </el-form-item>
       </el-form>
       <div class="text-right">
-        <el-button type="danger" @click="dialogVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="submit">
-          确定
+        <el-button type="primary" @click="dialogVisible = false">
+          关闭
         </el-button>
       </div>
     </el-dialog>
@@ -269,17 +236,20 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { getList } from '@/api/user'
 import { deepClone } from '@/utils'
+import { getlist, searchCourses } from '@/api/s_check_course'
 
 const _temp = {
-  id: '',
-  username: '',
-  truename: '',
-  role: [],
-  type: '管理员',
-  email: '',
-  status: 1
+  courseId: '',
+  courseName: '',
+  institution: '',
+  status: '',
+  teacherName: '',
+  time:'',
+  score: '',
+  semister:'',
+  courseType:'',
+  filled:''
 }
 
 export default {
@@ -290,109 +260,112 @@ export default {
     return {
       people: [],
       options_score: [
-        { value: '选项1', label: '0' },
-        { value: '选项2', label: '0.5' },
-        { value: '选项3', label: '1' },
-        { value: '选项4', label: '2' },
-        { value: '选项5', label: '3' }
+        { value: '0', label: '0' },
+        { value: '0.5', label: '0.5' },
+        { value: '1', label: '1' },
+        { value: '2', label: '2' },
+        { value: '3', label: '3' }
       ],
       options_time: [
-        { value: '选项1', label: '16' },
-        { value: '选项2', label: '24' },
-        { value: '选项3', label: '32' }
+        { value: '16', label: '16' },
+        { value: '24', label: '24' },
+        { value: '32', label: '32' }
       ],
       options_academy: [
-        { value: '选项1', label: '计算机学院' },
-        { value: '选项2', label: '农学院' },
-        { value: '选项3', label: '人文学院' },
-        { value: '选项4', label: '工程学院' },
-        { value: '选项5', label: '理学院' },
-        { value: '选项6', label: '管理学院' },
-        { value: '选项7', label: '医学院' },
-        { value: '选项8', label: '外国语学院' },
-        { value: '选项9', label: '法学院' },
-        { value: '选项10', label: '教育学院' },
-        { value: '选项11', label: '艺术学院' }
+        { value: '计算机学院', label: '计算机学院' },
+        { value: '农学院', label: '农学院' },
+        { value: '人文学院', label: '人文学院' },
+        { value: '工程学院', label: '工程学院' },
+        { value: '理学院', label: '理学院' },
+        { value: '管理学院', label: '管理学院' },
+        { value: '医学院', label: '医学院' },
+        { value: '外国语学院', label: '外国语学院' },
+        { value: '法学院', label: '法学院' },
+        { value: '教育学院', label: '教育学院' },
+        { value: '艺术学院', label: '艺术学院' }
       ],
       listQuery: {
-        page: 1,
-        limit: 20,
-        statuscourse: undefined,
-        statusempty: undefined,
-        value_academy: undefined,
-        person: undefined,
-        value_score: undefined,
-        value_time: undefined,
-        keywordid: '',
-        keywordname: ''
+        courseId: '',
+        courseName: '',
+        institution: '',
+        status: '',
+        teacherName: '',
+        time:'',
+        score: '',
+        semister:'',
+        courseType:'',
+        filled: null // 设置为 null 以确保其为布尔值或 null
       },
       total: 0,
       list: [],
+      filteredList: [],
       listLoading: true,
       dialogVisible: false,
       dialogType: 'create',
       temp: Object.assign({}, _temp),
-      loading:false
+      loading: false
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
-    loadAll() {
-                return [
-                  { "value": "刘大江" },
-                  { "value": "冯永" },
-                  { "value": "但敬佩" },
-                  { "value": "叶春晓" }
-                ];
-              },
     async fetchData() {
-      this.listLoading = true
-       getList(this.listQuery).then(response => {
-              this.list = response.data.items
-              this.total = response.data.total
-              this.listLoading = false
-            })
+      this.listLoading = true;
+      try {
+        const response = await getlist();
+        console.log('Fetched Data:', response.data); // 打印返回的数据
+        this.list = response.data;
+        this.filteredList = this.list;
+        this.total = response.data.total;
+      } catch (error) {
+        console.error('Error fetching course list:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
-      resetTemp() {
-          this.temp = Object.assign({}, _temp)
-        },
-   /* changeStatus(status, scope) {
-      scope.row.status = status
-    }, */
-    async edit(scope) {
+    resetTemp() {
+      this.temp = Object.assign({}, _temp)
+    },
+    create() {
+      this.resetTemp()
+      this.dialogType = '新增'
+      this.dialogVisible = true
+    },
+    async view(scope) {
       this.temp = deepClone(scope.row)
       this.dialogType = '查看'
       this.dialogVisible = true
     },
-    submit() {
-      this.$refs.dataForm.validate(valid => {
-        if (valid) {
-          this.dialogVisible = false
-        }
-      })
+    async search() {
+      this.fetchFilteredData()
     },
-    handleSelect(item) {
-      console.log(item)
-    },
-    search() {
-      this.fetchData()
-    },
-    refresh() {
+    async refresh() {
       this.listQuery = {
-        page: 1,
-        limit: 20,
-        statuscourse: undefined,
-        statusempty: undefined,
-        value_academy: undefined,
-        person: undefined,
-        value_score: undefined,
-        value_time: undefined,
-        keywordid: '',
-        keywordname: ''
+        courseId: '',
+        courseName: '',
+        institution: '',
+        status: '',
+        teacherName: '',
+        time:'',
+        score: '',
+        semister:'',
+        courseType:'',
+        filled: null
       }
-      this.fetchData()
+      await this.fetchData()
+    },
+    async fetchFilteredData() {
+      this.listLoading = true;
+      try {
+        const response = await searchCourses(this.listQuery);
+        this.filteredList = response.data.items;
+        this.total = response.data.total;
+      } catch (error) {
+        console.error('Failed to fetch filtered data:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
     querySearch(queryString, cb) {
       const results = this.people.filter(people => {
@@ -402,8 +375,8 @@ export default {
     }
   },
   mounted() {
-      this.people = this.loadAll();
-    }
+    this.people = this.loadAll();
+  }
 }
 </script>
 
@@ -428,5 +401,19 @@ export default {
 }
 .text-right {
   text-align: right;
+}
+.status-label {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+  display: inline-block;
+  width: 80px; /* 设置固定宽度 */
+  text-align: center;
+}
+.available {
+  background-color: green;
+}
+.not-available {
+  background-color: red;
 }
 </style>

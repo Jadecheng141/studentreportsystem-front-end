@@ -97,26 +97,26 @@ export const asyncRoutes = {
       ]
     },
     {
-      path: 'setting',
+      path: '/setting',
       component: 'Layout',
-      redirect: 'setting/user',
+      redirect: '/setting/user',
       name: 'Setting',
       meta: { title: '我的课程', icon: 'el-icon-s-tools' },
       children: [
         {
-          path: 'setting/user',
+          path: '/setting/user',
           name: 'User',
           component: 'views/user/index',
           meta: { title: '课程查询' }
         },
         {
-          path: 'setting/role',
+          path: '/setting/role',
           name: 'Role',
           component: 'views/role/index',
           meta: { title: '课程选择' }
         },
         {
-          path: 'setting/menu',
+          path: '/setting/menu',
           name: 'Menu',
           component: 'views/menu/index',
           meta: { title: '我的课表' }
@@ -193,12 +193,12 @@ export const asyncRoutes = {
       ]
     },
     {
-      path: 'setting',
+      path: '/setting',
       component: 'Layout',
       alwaysShow: true,
       children: [
         {
-          path: 'setting/user',
+          path: '/setting/user',
           name: 'Domitory',
           component: 'views/user/teachermanager',
           meta: { title: '教师管理', icon: 'el-icon-s-operation' }

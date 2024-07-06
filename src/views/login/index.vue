@@ -148,7 +148,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="ClosefindpasswordForm">取 消</el-button>
-        <el-button type="primary" @click="handleFindPassword">注 册</el-button>
+        <el-button type="primary" @click="handleFindPassword">确 认</el-button>
       </div>
     </el-dialog>
   </div>

@@ -13,6 +13,10 @@ export function sendVerificationCode(email) {
 export function findPassword(data) {
   return axios.post('/login/findpasswordback', data)
 }
+export function logout() {
+  return axios.get('/login/logout')
+}
+
 // export function getInfo(token) {
 //   return request({
 //     url: '/vue-admin-template/user/info',
