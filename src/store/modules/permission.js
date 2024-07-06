@@ -1,5 +1,5 @@
 import { constantRoutes } from '@/router'
-import { getroutes } from '@/api/permission'
+import { asyncRoutes } from '@/router/asyncRoutes'
 import Layout from '@/layout'
 
 /**
@@ -32,12 +32,16 @@ function loopCreateRouter(routes) {
 const state = {
   routes: [],
   second_routes: [],
-  third_routes: []
+  third_routes: [],
+  addedRoutes: false // 新增标记
 }
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.routes = routes
+  },
+  SET_ADDED_ROUTES: (state, status) => {
+    state.addedRoutes = status
   },
   SET_SECOND_ROUTES: (state, routes) => {
     state.second_routes = routes
@@ -48,18 +52,35 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }) {
+//   generateRoutes({ commit }) {
+//     return new Promise((resolve, reject) => {
+//       getroutes().then(response => {
+//         const { data } = response
+//         const asyncRouterMap = data.list
+//         const accessedRoutes = loopCreateRouter(asyncRouterMap)
+//         accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
+//         commit('SET_ROUTES', constantRoutes.concat(accessedRoutes))
+//         resolve(accessedRoutes)
+//       }).catch(error => {
+//         reject(error)
+//       })
+//     })
+//   },
+  generateRoutes({ commit }, role) {
     return new Promise((resolve, reject) => {
-      getroutes().then(response => {
-        const { data } = response
-        const asyncRouterMap = data.list
-        const accessedRoutes = loopCreateRouter(asyncRouterMap)
-        accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
-        commit('SET_ROUTES', constantRoutes.concat(accessedRoutes))
-        resolve(accessedRoutes)
-      }).catch(error => {
-        reject(error)
-      })
+      let asyncRouterMap
+      if (role === 'student') {
+        asyncRouterMap = asyncRoutes.student
+      } else if (role === 'teacher') {
+        asyncRouterMap = asyncRoutes.teacher
+      } else {
+        reject(new Error('Unknown role'))
+        return
+      }
+      const accessedRoutes = loopCreateRouter(asyncRouterMap)
+      accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
+      commit('SET_ROUTES', constantRoutes.concat(accessedRoutes))
+      resolve(accessedRoutes)
     })
   },
   changeSecondRoutes({ commit, state }, data) {

@@ -32,14 +32,18 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: ' https://20d0-113-249-231-182.ngrok-free.app', // 后端地址
+        target: 'http://192.168.198.153:8080', // 后端地址
         changeOrigin: true,
+        router: function (req) {
+          delete req.headers.origin // 加上这个有效
+        },
+
         pathRewrite: {
-          '^/api': '' // 将这里修改为符合远程服务地址的路径
+          '^/api': ''
         }
       }
     },
-    port: 8080,
+    port: 8083,
     open: true,
     overlay: {
       warnings: false,

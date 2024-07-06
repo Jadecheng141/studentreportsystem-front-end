@@ -1,9 +1,8 @@
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import NProgress from 'nprogress' // 加载条
+import 'nprogress/nprogress.css' // 加载样式
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -17,37 +16,38 @@ router.beforeEach(async(to, from, next) => {
   // set page title
   document.title = getPageTitle(to.meta.title)
 
-  // determine whether the user has logged in
-  const hasToken = getToken()
+  const role = sessionStorage.getItem('role')
+  const hasRole = role !== null
 
-  if (hasToken) {
+  if (hasRole) {
     if (to.path === '/login') {
-      // if is logged in, redirect to the home page
+      console.log('角色名：', role)
+      // 登录后重定向到首页
       next({ path: '/' })
       NProgress.done()
     } else {
-      // determine whether the user has obtained his permission roles through getInfo
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
-      if (hasRoles) {
+      const hasRoutes = store.getters.addedRoutes
+      if (hasRoutes) {
         next()
       } else {
         try {
-          // get user info
-          // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          await store.dispatch('user/getInfo')
-
-          // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes')
-
-          // dynamically add accessible routes
+          console.log('获取路由:', role)
+          // 依据角色获取路由
+          const accessRoutes = await store.dispatch(
+            'permission/generateRoutes',
+            role
+          )
+          // 添加动态路由
           router.addRoutes(accessRoutes)
+          // 标记路由已添加
+          store.commit('permission/SET_ADDED_ROUTES', true)
 
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
         } catch (error) {
-          // remove token and go to login page to re-login
-          await store.dispatch('user/resetToken')
+          // // 移除无效的 role
+          sessionStorage.removeItem('role')
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
           NProgress.done()
@@ -55,7 +55,7 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    /* has no token*/
+    /* 没有角色信息*/
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly

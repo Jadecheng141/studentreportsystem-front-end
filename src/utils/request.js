@@ -4,11 +4,11 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 
 const instance = axios.create({
-  baseURL: '  https://20d0-113-249-231-182.ngrok-free.app',
+  baseURL: ' /api', // 使用代理
   timeout: 10000,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'multipart/form-data'
   }
 })
 
@@ -24,8 +24,7 @@ const instance = axios.create({
 //     'Content-Type': 'application/x-www-form-urlencoded' // 设置请求头为 x-www-form-urlencoded
 //   }
 // }
-instance.defaults.headers.post['Content-Type'] =
-  'application/x-www-form-urlencoded;charset=UTF-8'
+instance.defaults.headers.post['Content-Type'] = 'multipart/form-data'
 // request interceptor
 instance.interceptors.request.use(
   config => {

@@ -18,3 +18,18 @@ export function validUsername(str) {
   const valid_map = ['admin', 'editor']
   return valid_map.indexOf(str.trim()) >= 0
 }
+
+/**
+ * @param {string} str
+ * @returns {Boolean}
+ */
+export function validateEmail(email) {
+  // 判断是否为空
+  if (!email || email.trim() === '') {
+    return false
+  }
+
+  // 使用正则表达式验证邮箱格式
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}

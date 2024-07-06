@@ -4,7 +4,15 @@ export function login(data) {
   console.log('登录进行：')
   return axios.post('/login', data)
 }
-
+export function signup(data) {
+  return axios.post('/login/activate', data)
+}
+export function sendVerificationCode(email) {
+  return axios.post('/login/sendVerificationCode', email)
+}
+export function findPassword(data) {
+  return axios.post('/login/findpasswordback', data)
+}
 // export function getInfo(token) {
 //   return request({
 //     url: '/vue-admin-template/user/info',

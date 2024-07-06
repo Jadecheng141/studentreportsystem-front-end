@@ -8,6 +8,10 @@ const getDefaultState = () => {
     roles: []
   }
 }
+const getters = {
+  roles: (state) => state.roles,
+  name: (state) => state.name
+}
 
 const state = getDefaultState()
 
@@ -32,16 +36,16 @@ const actions = {
     console.log('执行登录')
     const { username, password } = userInfo
     // 创建一个 URLSearchParams 对象来处理数据
-    const requestData = new URLSearchParams()
-    requestData.append('username', username.trim())
-    requestData.append('password', password)
+    const formData = new FormData()
+    formData.append('username', username.trim())
+    formData.append('password', password)
     return new Promise((resolve, reject) => {
-      login(requestData)
+      login(formData)
         .then((response) => {
-          console.log('response:', response)
           if (response.status === 200) {
-            commit('SET_NAME', response.name)
-            commit('SET_ROLES', response.role)
+            sessionStorage.setItem('role', response.data.role)
+            commit('SET_NAME', response.data.username)
+            commit('SET_ROLES', response.data.role)
             resolve(response)
           } else {
             return reject('Verification failed, please Login again.')
@@ -72,6 +76,7 @@ export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
+  getters
 }
 
