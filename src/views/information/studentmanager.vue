@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.value_academy" size="small" placeholder="所属学院" clearable class="filter-item">
+      <el-select v-model="listQuery.academy" size="small" placeholder="所属学院" clearable class="filter-item">
         <el-option v-for="item in options_academy" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
-      <el-input v-model="listQuery.keywordid" size="small" placeholder="请输入学生学号" clearable class="filter-item w-200" />
-      <el-input v-model="listQuery.keywordname" size="small" placeholder="请输入学生姓名" clearable class="filter-item w-200" />
+      <el-input v-model="listQuery.studentId" size="small" placeholder="请输入学生学号" clearable class="filter-item w-200" />
+      <el-input v-model="listQuery.studentName" size="small" placeholder="请输入学生姓名" clearable class="filter-item w-200" />
       <el-button size="small" type="primary" icon="el-icon-search" @click="search" class="filter-item">
         搜索
       </el-button>
@@ -16,12 +16,12 @@
     <el-table v-loading="listLoading" :data="filteredList" element-loading-text="Loading" border fit height="100%" class="table-container" highlight-current-row>
       <el-table-column label="学生学号" align="center">
         <template slot-scope="scope">
-          {{ scope.row.id }}
+          {{ scope.row.studentId }}
         </template>
       </el-table-column>
       <el-table-column label="学生姓名" align="center">
         <template slot-scope="scope">
-          {{ scope.row.username }}
+          {{ scope.row.studentName }}
         </template>
       </el-table-column>
       <el-table-column label="所属学院" align="center">
@@ -31,17 +31,17 @@
       </el-table-column>
       <el-table-column label="报道信息填写" align="center">
         <template slot-scope="scope">
-          <span :class="{'status-dot': true, 'completed': scope.row.reportInfoCompleted, 'not-completed': !scope.row.reportInfoCompleted}"></span>
+          <span :class="{'status-dot': true, 'completed': scope.row.state1, 'not-completed': !scope.row.state1}"></span>
         </template>
       </el-table-column>
       <el-table-column label="宿舍确认" align="center">
         <template slot-scope="scope">
-          <span :class="{'status-dot': true, 'completed': scope.row.dormConfirmed, 'not-completed': !scope.row.dormConfirmed}"></span>
+          <span :class="{'status-dot': true, 'completed': scope.row.state2, 'not-completed': !scope.row.state2}"></span>
         </template>
       </el-table-column>
       <el-table-column label="是否缴费" align="center">
         <template slot-scope="scope">
-          <el-checkbox v-model="scope.row.feePaid" @change="updateFeeStatus(scope.row)"></el-checkbox>
+          <el-checkbox v-model="scope.row.state3" @change="updateFeeStatus(scope.row)"></el-checkbox>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" align="center">
@@ -60,10 +60,10 @@
     <el-dialog :visible.sync="dialogVisible" :title="dialogType === '查看' ? '查看学生信息' : '新增学生信息'">
       <el-form ref="dataForm" :model="temp" label-width="120px" label-position="right">
         <el-form-item label="学生学号">
-          <el-input v-model="temp.id" placeholder="请输入学生学号" />
+          <el-input v-model="temp.studentId" placeholder="请输入学生学号" />
         </el-form-item>
         <el-form-item label="学生姓名">
-          <el-input v-model="temp.username" placeholder="请输入学生姓名" />
+          <el-input v-model="temp.studentName" placeholder="请输入学生姓名" />
         </el-form-item>
         <el-form-item label="电话">
           <el-input v-model="temp.phone" placeholder="请输入电话" />
@@ -80,13 +80,10 @@
           <el-input v-model="temp.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-form-item label="照片">
-          <img v-if="temp.avatar" :src="temp.avatar" class="avatar" />
+          <img :src="temp.figureUrl" class="avatar" />
         </el-form-item>
       </el-form>
       <div class="text-right">
-        <!-- <el-button type="danger" @click="dialogVisible = false">
-          取消
-        </el-button> -->
         <el-button type="primary" @click="submit">
           确定
         </el-button>
@@ -97,20 +94,20 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-// import { getList, updateFeeStatus } from '@/api/user'
+import { searchCourses } from '@/api/studentmanager'
 import { deepClone } from '@/utils'
 
 const _temp = {
-  id: '',
-  username: '',
-  phone: '',
-  academy: '',
-  dorm: '',
-  email: '',
-  avatar: '',
-  reportInfoCompleted: false,
-  dormConfirmed: false,
-  feePaid: false
+  studentId: '',
+  studentName: '',
+  phone:  '',
+  academy:  '',
+  state1:  false,
+  state2:  false,
+  state3:  false,
+  dorm:  '',
+  email:  '',
+  figureUrl:  ''
 }
 
 export default {
@@ -133,11 +130,16 @@ export default {
         { value: '艺术学院', label: '艺术学院' }
       ],
       listQuery: {
-        page: 1,
-        limit: 20,
-        value_academy: '',
-        keywordid: '',
-        keywordname: ''
+        studentId: '',
+        studentName: '',
+        phone:  '',
+        academy:  '',
+        state1:  false,
+        state2:  false,
+        state3:  false,
+        dorm:  '',
+        email:  '',
+        figureUrl:  ''
       },
       total: 0,
       list: [],
@@ -154,19 +156,18 @@ export default {
   },
   methods: {
     async fetchData() {
-      // 模拟数据
-      this.list = [
-        { id: '20190001', username: '张三', phone: '12345678901', academy: '计算机学院', dorm: '1号楼101', email: 'zhangsan@example.com', avatar: 'https://via.placeholder.com/150', reportInfoCompleted: false, dormConfirmed: true, feePaid: false },
-        { id: '20190002', username: '李四', phone: '12345678902', academy: '农学院', dorm: '2号楼202', email: 'lisi@example.com', avatar: 'https://via.placeholder.com/150', reportInfoCompleted: false, dormConfirmed: true, feePaid: true },
-        { id: '20190003', username: '王五', phone: '12345678903', academy: '人文学院', dorm: '3号楼303', email: 'wangwu@example.com', avatar: 'https://via.placeholder.com/150', reportInfoCompleted: true, dormConfirmed: false, feePaid: false },
-        { id: '20190004', username: '赵六', phone: '12345678904', academy: '工程学院', dorm: '4号楼404', email: 'zhaoliu@example.com', avatar: 'https://via.placeholder.com/150', reportInfoCompleted: true, dormConfirmed: true, feePaid: true }
-      ];
-      this.total = this.list.length;
-      this.filteredList = this.list;
-      this.listLoading = false;
-    },
-    changeStatus(status, scope) {
-      scope.row.status = status
+      this.listLoading = true;
+      try {
+        const response = await searchCourses(this.listQuery);
+        this.list = response.data.data; // Ensure that this matches the actual structure of your API response
+        this.total = response.data.total; // Ensure that this matches the actual structure of your API response
+        this.filteredList = this.list;
+        console.log('response:',response.data)
+      } catch (error) {
+        console.error('Error fetching student data:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
     resetTemp() {
       this.temp = deepClone(_temp)
@@ -182,37 +183,31 @@ export default {
       this.dialogType = '查看'
     },
     search() {
-      this.filterList()
+      this.listQuery.page = 1; // Reset to the first page when a search is performed
+      this.fetchData();
     },
     refresh() {
-      this.listQuery = {
-        page: 1,
-        limit: 20,
-        value_academy: '',
-        keywordid: '',
-        keywordname: ''
-      }
-      this.filteredList = this.list
+      this.listQuery = deepClone(_temp);
+      this.fetchData();
     },
     submit() {
-      const temp = Object.assign({}, this.temp)
+      const temp = Object.assign({}, this.temp);
       // Save logic
-      this.dialogVisible = false
-      this.fetchData()
+      this.dialogVisible = false;
+      this.fetchData();
     },
     updateFeeStatus(row) {
       // 模拟更新状态
-      row.feePaid = !row.feePaid;
+      row.state3 = !row.state3;
       this.$message.success('缴费状态更新成功');
     },
-    filterList() {
-      this.filteredList = this.list.filter(item => {
-        return (
-          (!this.listQuery.value_academy || item.academy.includes(this.listQuery.value_academy)) &&
-          (!this.listQuery.keywordid || item.id.includes(this.listQuery.keywordid)) &&
-          (!this.listQuery.keywordname || item.username.includes(this.listQuery.keywordname))
-        );
-      });
+    handlePaginationChange(page) {
+      this.listQuery.page = page;
+      this.fetchData();
+    },
+    handleLimitChange(limit) {
+      this.listQuery.limit = limit;
+      this.fetchData();
     }
   }
 }

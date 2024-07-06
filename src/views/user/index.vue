@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
+    <!-- Filter Container 1 -->
     <div class="filter-container1">
+      <!-- Status Select -->
       <el-select
         v-model="listQuery.status"
         size="small"
@@ -11,6 +13,8 @@
         <el-option label="可选" :value="'已开始'" />
         <el-option label="不可选" :value="'未开始'" />
       </el-select>
+
+      <!-- Filled Select -->
       <el-select
         v-model="listQuery.filled"
         size="small"
@@ -21,6 +25,8 @@
         <el-option label="是" :value="true" />
         <el-option label="否" :value="false" />
       </el-select>
+
+      <!-- Institution Select -->
       <el-select v-model="listQuery.institution" size="small" placeholder="开课学院" class="filter-item">
         <el-option
           v-for="item in options_academy"
@@ -29,6 +35,8 @@
           :value="item.value">
         </el-option>
       </el-select>
+
+      <!-- Teacher Name Autocomplete -->
       <el-autocomplete
         class="inline-input"
         size="small"
@@ -36,6 +44,8 @@
         :fetch-suggestions="querySearch"
         placeholder="课程负责人"
       ></el-autocomplete>
+
+      <!-- Score Select -->
       <el-select v-model="listQuery.score" size="small" placeholder="学分" class="filter-item">
         <el-option
           v-for="item in options_score"
@@ -44,6 +54,8 @@
           :value="item.value">
         </el-option>
       </el-select>
+
+      <!-- Time Select -->
       <el-select v-model="listQuery.time" size="small" placeholder="学时" class="filter-item">
         <el-option
           v-for="item in options_time"
@@ -51,6 +63,8 @@
           :label="item.label">
         </el-option>
       </el-select>
+
+      <!-- Search Button -->
       <div class="button-container">
         <el-button
           size="small"
@@ -62,7 +76,10 @@
         </el-button>
       </div>
     </div>
+
+    <!-- Filter Container 2 -->
     <div class="filter-container2">
+      <!-- Course ID Input -->
       <el-input
         v-model="listQuery.courseId"
         size="small"
@@ -70,6 +87,7 @@
         clearable
         class="filter-item w-200"
       />
+      <!-- Course Name Input -->
       <el-input
         v-model="listQuery.courseName"
         size="small"
@@ -77,6 +95,7 @@
         clearable
         class="filter-item w-200"
       />
+      <!-- Reset Button -->
       <div class="button-container">
         <el-button
           size="small"
@@ -88,6 +107,8 @@
         </el-button>
       </div>
     </div>
+
+    <!-- Course Table -->
     <el-table
       v-loading="listLoading"
       :data="filteredList"
@@ -168,7 +189,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span>{{ scope.row.semester }}</span>
+          <span>{{ scope.row.semister }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -196,6 +217,7 @@
       </el-table-column>
     </el-table>
 
+    <!-- Course Detail Dialog -->
     <el-dialog
       :visible.sync="dialogVisible"
       :title="dialogType === '编辑' ? '编辑课程信息' : '查看课程信息'"
@@ -237,7 +259,7 @@
 <script>
 import Pagination from '@/components/Pagination'
 import { deepClone } from '@/utils'
-import { getlist, searchCourses } from '@/api/s_check_course'
+import { getlist, searchCourses, detailCourses } from '@/api/s_check_course'
 
 const _temp = {
   courseId: '',
@@ -249,7 +271,8 @@ const _temp = {
   score: '',
   semister:'',
   courseType:'',
-  filled:''
+  filled: null,
+  introduction: ''
 }
 
 export default {
@@ -286,7 +309,7 @@ export default {
       ],
       listQuery: {
         courseId: '',
-        courseName: '',
+        courseName: '' ,
         institution: '',
         status: '',
         teacherName: '',
@@ -294,7 +317,7 @@ export default {
         score: '',
         semister:'',
         courseType:'',
-        filled: null // 设置为 null 以确保其为布尔值或 null
+        filled: null
       },
       total: 0,
       list: [],
@@ -333,9 +356,15 @@ export default {
       this.dialogVisible = true
     },
     async view(scope) {
-      this.temp = deepClone(scope.row)
-      this.dialogType = '查看'
-      this.dialogVisible = true
+      // 调用 detailCourses 函数并处理返回的数据
+      try {
+        const response = await detailCourses(scope.row.courseId);
+        this.temp = response.data;
+        this.dialogType = '查看';
+        this.dialogVisible = true;
+      } catch (error) {
+        console.error('Failed to fetch course details:', error);
+      }
     },
     async search() {
       this.fetchFilteredData()
@@ -359,7 +388,7 @@ export default {
       this.listLoading = true;
       try {
         const response = await searchCourses(this.listQuery);
-        this.filteredList = response.data.items;
+        this.filteredList = response.data;
         this.total = response.data.total;
       } catch (error) {
         console.error('Failed to fetch filtered data:', error);
@@ -407,7 +436,7 @@ export default {
   border-radius: 5px;
   color: white;
   display: inline-block;
-  width: 80px; /* 设置固定宽度 */
+  width: 80px;
   text-align: center;
 }
 .available {

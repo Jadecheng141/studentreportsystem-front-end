@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container1">
       <el-select
-        v-model="listQuery.college"
+        v-model="listQuery.tacademy"
         size="small"
         placeholder="选择学院"
         clearable
@@ -82,7 +82,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.college }}
+          {{ scope.row.tacademy }}
         </template>
       </el-table-column>
       <el-table-column
@@ -136,7 +136,7 @@
               <el-input v-model="temp.title" placeholder="请输入职称" :disabled="dialogType === '查看'" />
             </el-form-item>
             <el-form-item label="所属学院">
-              <el-select v-model="temp.college" placeholder="请选择学院" :disabled="dialogType === '查看'">
+              <el-select v-model="temp.tacademy" placeholder="请选择学院" :disabled="dialogType === '查看'">
                 <el-option
                   v-for="item in options_college"
                   :key="item.value"
@@ -146,10 +146,10 @@
               </el-select>
             </el-form-item>
             <el-form-item label="电子邮箱">
-              <el-input v-model="temp.email" placeholder="请输入电子邮箱" :disabled="dialogType === '查看'" />
+              <el-input v-model="temp.temail" placeholder="请输入电子邮箱" :disabled="dialogType === '查看'" />
             </el-form-item>
             <el-form-item label="照片">
-              <el-upload
+            <!--  <el-upload
                 action="#"
                 list-type="picture-card"
                 :file-list="fileList"
@@ -160,17 +160,15 @@
                 :disabled="dialogType === '查看'"
               >
                 <i class="el-icon-plus" v-if="dialogType !== '查看'"></i>
-              </el-upload>
-              <el-dialog :visible.sync="dialogImageUrl" size="tiny">
-                <img :src="dialogImageUrl" alt="">
-              </el-dialog>
+              </el-upload> -->
+                <img :src="temp.figureUrl" alt="">
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">
               <el-input
                 type="textarea"
-                v-model="temp.bio"
+                v-model="temp.introduction"
                 placeholder="请输入个人简介"
                 rows="10"
                 :disabled="dialogType === '查看'"
@@ -194,19 +192,19 @@
   </div>
 </template>
 
-
 <script>
 import Pagination from '@/components/Pagination'
 import { deepClone } from '@/utils'
-
+import { getlist, searchCourses,detailCourses } from '@/api/s_check_teacher'
 const _temp = {
   teacherId: '',
   teacherName: '',
-  college: '',
+  tacademy: '',
   title: '',
-  email: '',
-  photo: '',
-  bio: ''
+  temail: '',
+  figureUrl: '',
+  introduction: '',
+  imageBytes:''
 }
 
 export default {
@@ -229,11 +227,14 @@ export default {
         { value: '艺术学院', label: '艺术学院' }
       ],
       listQuery: {
-        page: 1,
-        limit: 20,
-        college: undefined,
         teacherId: '',
-        teacherName: ''
+        teacherName: '',
+        tacademy: '',
+        title: '',
+        temail: '',
+        figureUrl: '',
+        introduction: '',
+        imageBytes:''
       },
       total: 0,
       list: [],
@@ -252,30 +253,17 @@ export default {
   },
   methods: {
     async fetchData() {
-      // 模拟数据
-      this.list = [
-        { teacherId: 'T001', teacherName: '张三', college: '计算机学院', title: '教授', email: 'zhangsan@example.com', photo: 'http://example.com/photo1.jpg', bio: '张三教授的个人简介' },
-        { teacherId: 'T002', teacherName: '李四', college: '农学院', title: '副教授', email: 'lisi@example.com', photo: 'http://example.com/photo2.jpg', bio: '李四副教授的个人简介' },
-        { teacherId: 'T003', teacherName: '王五', college: '人文学院', title: '讲师', email: 'wangwu@example.com', photo: 'http://example.com/photo3.jpg', bio: '王五讲师的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' },
-        { teacherId: 'T004', teacherName: '赵六', college: '工程学院', title: '助教', email: 'zhaoliu@example.com', photo: 'http://example.com/photo4.jpg', bio: '赵六助教的个人简介' }
-      ];
-      this.total = this.list.length;
-      this.filteredList = this.list;
-      this.listLoading = false;
+      this.listLoading = true;
+      try {
+        const response = await getlist(this.listQuery);
+        this.list = response.data;
+        this.filteredList = this.list;
+        this.total = this.list.length;
+      } catch (error) {
+        console.error('Error fetching teacher list:', error);
+      } finally {
+        this.listLoading = false;
+      }
     },
     resetTemp() {
       this.temp = Object.assign({}, _temp)
@@ -286,10 +274,14 @@ export default {
       this.dialogVisible = true
     },
     async view(scope) {
-      this.temp = deepClone(scope.row)
-      this.dialogType = '查看'
-      this.dialogVisible = true
-      this.fileList = this.temp.photo ? [{ name: '照片', url: this.temp.photo }] : [];
+      try {
+        const response = await detailCourses(scope.row.teacherId);
+        this.temp = response.data;
+        this.dialogType = '查看';
+        this.dialogVisible = true;
+      } catch (error) {
+        console.error('Failed to fetch course details:', error);
+      }
     },
     submit() {
       this.$refs.dataForm.validate(valid => {
@@ -328,33 +320,37 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    search() {
-      this.filterList()
+    async search() {
+      await this.fetchFilteredData();
     },
-    refresh() {
+    async refresh() {
       this.listQuery = {
-        page: 1,
-        limit: 20,
-        college: undefined,
         teacherId: '',
-        teacherName: ''
+        teacherName: '',
+        tacademy: '',
+        title: '',
+        temail: '',
+        figureUrl: '',
+        introduction: '',
+        imageBytes:''
       }
-      this.filteredList = this.list;
+      await this.fetchData();
     },
-    filterList() {
-      this.filteredList = this.list.filter(item => {
-        return (
-          (!this.listQuery.college || item.college.includes(this.listQuery.college)) &&
-          (!this.listQuery.teacherId || item.teacherId.includes(this.listQuery.teacherId)) &&
-          (!this.listQuery.teacherName || item.teacherName.includes(this.listQuery.teacherName))
-        );
-      });
-      this.total = this.filteredList.length;
+    async fetchFilteredData() {
+      this.listLoading = true;
+      try {
+        const response = await searchCourses(this.listQuery);
+        this.filteredList = response.data;
+        this.total = this.filteredList.length;
+      } catch (error) {
+        console.error('Failed to fetch filtered data:', error);
+      } finally {
+        this.listLoading = false;
+      }
     }
   }
 }
 </script>
-
 
 <style scoped>
 .filter-container1 {

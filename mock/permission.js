@@ -13,41 +13,41 @@ const routes = [
       meta: { title: '首页', icon: 'thefirstpage' }
     }]
   },
-  {
-    path: '/b',
-    component: 'Layout',
-    redirect: '/b/baodao',
-    name: 'B',
-    alwaysShow: true,
-    meta: { title: '报道信息', icon: 'el-icon-help' },
-    children: [
-      {
-        path: '/b/baodao',
-        name: 'Baodao',
-        component: 'views/information/information',
-        meta: { title: '基本信息' }
-      },
-      {
-        path: '/b/domitorydecide',
-        name: 'Domitorydecide',
-        component: 'views/domitorydecide/dode',
-        meta: { title: '宿舍确认' }
-      }
-    ]
-  },
   /* {
       path: '/b',
       component: 'Layout',
-      alwaysShow: true,
+      redirect: '/b/baodao',
+      name: 'B',
+      alwaysShow:true,
+      meta: { title: '报道信息', icon: 'el-icon-help' },
       children: [
         {
           path: '/b/baodao',
-          name: 'B',
-          component: 'views/information/studentmanager',
-          meta: { title: '报道信息', icon: 'el-icon-help' }
+          name: 'Baodao',
+          component: 'views/information/information',
+          meta: { title: '基本信息' }
+        },
+        {
+          path: '/b/domitorydecide',
+          name: 'Domitorydecide',
+          component: 'views/domitorydecide/dode',
+          meta: { title: '宿舍确认' }
         }
       ]
     }, */
+  {
+    path: '/b',
+    component: 'Layout',
+    alwaysShow: true,
+    children: [
+      {
+        path: '/b/baodao',
+        name: 'B',
+        component: 'views/information/studentmanager',
+        meta: { title: '报道信息', icon: 'el-icon-help' }
+      }
+    ]
+  },
   {
     path: '/ads',
     component: 'Layout',
@@ -94,20 +94,20 @@ const routes = [
       }
     ]
   }, */
+  // {
+  //   path: '/nested',
+  //   component: 'Layout',
+  //   alwaysShow: true,
+  //   children: [
+  //     {
+  //       path: '/nested/domitory',
+  //       name: 'Domitory',
+  //       component: 'views/nested/domitory',
+  //       meta: { title: '我的宿舍', icon: 'el-icon-s-operation' }
+  //     }
+  //   ]
+  // },
   {
-    path: '/nested',
-    component: 'Layout',
-    alwaysShow: true,
-    children: [
-      {
-        path: '/nested/domitory',
-        name: 'Domitory',
-        component: 'views/nested/domitory',
-        meta: { title: '我的宿舍', icon: 'el-icon-s-operation' }
-      }
-    ]
-  },
-  /* {
     path: '/nested',
     component: 'Layout',
     alwaysShow: true,
@@ -119,7 +119,7 @@ const routes = [
         meta: { title: '我的宿舍', icon: 'el-icon-s-operation' }
       }
     ]
-  }, */
+  },
   {
     path: '/site',
     component: 'Layout',
@@ -146,7 +146,7 @@ const routes = [
       }
     ]
   }, */
-  {
+  /* {
     path: '/setting',
     component: 'Layout',
     redirect: '/setting/user',
@@ -172,8 +172,8 @@ const routes = [
         meta: { title: '我的课表' }
       }
     ]
-  }
-  /* {
+  } */
+  {
     path: '/setting',
     component: 'Layout',
     alwaysShow: true,
@@ -185,7 +185,7 @@ const routes = [
         meta: { title: '我的课程', icon: 'el-icon-s-operation' }
       }
     ]
-  } */
+  }
 ]
 
 module.exports = [
