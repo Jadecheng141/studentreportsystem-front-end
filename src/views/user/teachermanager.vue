@@ -622,7 +622,7 @@ export default {
             <el-form-item label="电子邮箱">
               <el-input v-model="addTemp.temail" placeholder="请输入电子邮箱" />
             </el-form-item>
-            <el-form-item label="照片">
+            <!-- <el-form-item label="照片">
               <el-upload
                             class="avatar-uploader"
                             action=" "
@@ -632,10 +632,10 @@ export default {
                             <img v-if="figureUrl" :src="figureUrl" class="avatar">
                             <i v-else class="el-icon-plus avatar-uploader-icon" />
                           </el-upload>
-<!--              <el-dialog :visible.sync="dialogImageUrl" size="tiny">
+              <!--<el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
               </el-dialog> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">
@@ -694,7 +694,7 @@ export default {
             <el-form-item label="电子邮箱">
               <el-input v-model="editTemp.temail" placeholder="请输入电子邮箱" />
             </el-form-item>
-            <el-form-item label="照片">
+          <!--  <el-form-item label="照片">
               <el-upload
                             class="avatar-uploader"
                             action=" "
@@ -707,7 +707,7 @@ export default {
               <el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
               </el-dialog>
-            </el-form-item>
+            </el-form-item> -->
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">
@@ -736,7 +736,7 @@ export default {
 <script>
 import Pagination from '@/components/Pagination'
 import axios from 'axios';
-import { getlist, searchCourses, createCourse, deleteCourse, updateCourse } from '@/api/t_check_teacher'
+import { getlist, searchCourses, createCourse, deleteCourse, updateCourse,detailCourses } from '@/api/t_check_teacher'
 import { deepClone } from '@/utils'
 
 const _temp = {

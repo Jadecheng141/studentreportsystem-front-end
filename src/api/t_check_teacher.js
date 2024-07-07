@@ -62,3 +62,13 @@ export function uploadImage(file) {
     }
   });
 }
+export function detailCourses(teacherId) {
+  const formData = new FormData();
+  formData.append('teacherId', teacherId);
+
+  return axios.post('/api/AdmInfo/teacherDetails', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}

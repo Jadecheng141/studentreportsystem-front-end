@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 import axios from 'axios';
 
-export function updateFeeStatus(studentId, state3) {
+export function updateFeeStatus(studentId) {
   const formData = new FormData();
   formData.append('id', studentId);
-  formData.append('state3', state3);
+  /* formData.append('state3', state3); */
 
   return axios.post('/api/manage/findStudents/state', formData, {
     headers: {
