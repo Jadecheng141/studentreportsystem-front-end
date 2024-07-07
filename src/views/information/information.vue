@@ -5,6 +5,18 @@
       <form @submit.prevent="submitForm">
         <div class="left-column">
           <div class="form-group">
+            <el-upload
+              class="avatar-uploader"
+              action=" "
+              :http-request="uploadFile"
+              :show-file-list="false"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+
+          </div>
+          <div class="form-group">
             <label for="name">姓名:</label>
             <input id="name" v-model="form.name" type="text" required>
           </div>
@@ -45,27 +57,7 @@
           </div>
         </div>
         <div class="right-column">
-          <div class="form-group">
-            <!-- <el-upload
-              class="upload-demo"
-              action=""
-              :http-request="uploadFile"
-              :limit="1"
-              :show-file-list="false"
-            >
-              <el-button size="small" type="primary">点击上传</el-button>
-            </el-upload> -->
-            <el-upload
-              class="avatar-uploader"
-              action=" "
-              :http-request="uploadFile"
-              :show-file-list="false"
-            >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
 
-          </div>
           <div class="form-group">
             <label for="fatherName">父亲姓名:</label>
             <input id="fatherName" v-model="form.fatherName" type="text" required>
@@ -90,14 +82,15 @@
             <label for="emergencyContactNumber">紧急联系人联系电话:</label>
             <input id="emergencyContactNumber" v-model="form.emergencyContactNumber" type="text" required>
           </div>
-          <div>
+          <div class="captchaForm-container">
+            <form class="captchaInput-container" @submit.prevent="submitInfo">
+              <input v-model="captchaInput" placeholder="输入验证码" required>
+            </form>
             <div class="captcha-container">
               <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha">
               <button @click="refreshCaptcha">刷新验证码</button>
             </div>
-            <form @submit.prevent="submitInfo">
-              <input v-model="captchaInput" placeholder="输入验证码" required>
-            </form>
+
           </div>
 
           <button type="submit" class="submit-button" @click="submitInfo">提交</button>
@@ -150,7 +143,7 @@ export default {
       const formData = new FormData()
       formData.append('file', file.file)
       this.previewImage(file.file)
-      this.$axios.post('/information/upload', formData).then(response => {
+      this.$axios.post('/api/information/upload', formData).then(response => {
         if (response.status === 'success') {
           this.$message.success('照片上传成功')
         } else {

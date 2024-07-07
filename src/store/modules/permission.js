@@ -29,16 +29,23 @@ function loopCreateRouter(routes) {
   return res
 }
 
-const state = {
-  routes: [],
-  second_routes: [],
-  third_routes: [],
-  addedRoutes: false // 新增标记
+const getDefaultState = () => {
+  return {
+    routes: [],
+    second_routes: [],
+    third_routes: [],
+    addedRoutes: false // 新增标记
+  }
 }
+
+const state = getDefaultState()
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.routes = routes
+  },
+  RESET_STATE: (state) => {
+    Object.assign(state, getDefaultState())
   },
   SET_ADDED_ROUTES: (state, status) => {
     state.addedRoutes = status
@@ -82,6 +89,9 @@ const actions = {
       commit('SET_ROUTES', constantRoutes.concat(accessedRoutes))
       resolve(accessedRoutes)
     })
+  },
+  resetPermissionState({ commit }) {
+    commit('RESET_STATE')
   },
   changeSecondRoutes({ commit, state }, data) {
     commit('SET_SECOND_ROUTES', [])

@@ -59,7 +59,7 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
       const formData = new FormData()
       formData.append('emptyField', '') // 添加一个空字段
@@ -68,6 +68,7 @@ const actions = {
           resetRouter()
           sessionStorage.clear() // 清除 sessionStorage 中的所有数据
           commit('RESET_STATE')
+          dispatch('permission/resetPermissionState', null, { root: true }) // 重置 permission 模块的状态
           resolve()
         })
         .catch((error) => {

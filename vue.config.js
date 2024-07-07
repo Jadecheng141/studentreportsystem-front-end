@@ -32,7 +32,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://192.168.181.14:8080', // 后端地址
+        target: 'http://121.36.218.207:8080', // 后端地址
         changeOrigin: true,
         router: function (req) {
           delete req.headers.origin // 加上这个有效
@@ -48,8 +48,7 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
-    },
-    before: require('./mock/mock-server.js')
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

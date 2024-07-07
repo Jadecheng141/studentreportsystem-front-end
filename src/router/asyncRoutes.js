@@ -148,7 +148,7 @@ export const asyncRoutes = {
         {
           path: '/b/baodao',
           name: 'B',
-          component: 'views/informationudentmanager',
+          component: 'views/information/studentmanager',
           meta: { title: '学生管理', icon: 'el-icon-help' }
         }
       ]
@@ -199,7 +199,7 @@ export const asyncRoutes = {
       children: [
         {
           path: '/setting/user',
-          name: 'Domitory',
+          name: 'teachermanage',
           component: 'views/user/teachermanager',
           meta: { title: '教师管理', icon: 'el-icon-s-operation' }
         }
