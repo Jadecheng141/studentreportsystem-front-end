@@ -16,7 +16,7 @@
     <div class="container_mid">
       <div class="title_text_out">
         <div class="titletext">
-          数据信息面板<br>{{ now_time }}
+          <p>数据信息面板<br><br>{{ now_time }}</p>
         </div>
       </div>
       <div class="map_container">
@@ -32,15 +32,16 @@
     <div class="container_right">
       <div class="container_text_out">
         <div class="text_container">
-          {{ low_inst[0] }}，{{ low_inst[1] }}，{{ low_inst[2] }}
-          辅导员请注意!<br>
-          学院的报到率为{{ low_rate[0] }}%，{{ low_rate[1] }}%，{{ low_rate[2] }}%<br>
+          <br>
+          以下学院辅导员请注意!<br>
+          {{ low_inst[0] }}，{{ low_inst[1] }}，{{ low_inst[2] }}<br>
+          报到率为{{ low_rate[0] }}%，{{ low_rate[1] }}%，{{ low_rate[2] }}%<br>
           请多加关注学生报道情况！
         </div>
       </div>
       <div class="text_3">
         <div class="text_left">今日已经报道人数<br><br>{{ todayCount }}人</div>
-        <div class="text_mid">预计今日报道人数<br><br>{{ todayCount }}人</div>
+        <div class="text_mid">预计今日报道人数<br><br>{{ predict_data }}人</div>
         <div class="text_right">距离报道结束剩余<br><br>{{ left_day }}天</div>
       </div>
       <div class="m7">
@@ -53,7 +54,6 @@
 <script>
 import axios from 'axios'
 import * as echarts from 'echarts'
-import { color } from 'echarts/lib/export'
 import 'echarts/map/js/china' // 确保你有安装 echarts 及相关插件
 
 export default {
@@ -149,7 +149,7 @@ export default {
 
     async fetchMapData() {
       try {
-        const response = await axios.get('api/administrator/data')
+        const response = await axios.get('http://121.36.218.207:8080/administrator/data')
         console.info('Full response:', response) // 打印完整的响应
         console.info('Data:', response.data) // 打印响应中的数据
         this.get_time
@@ -171,8 +171,8 @@ export default {
         this.lowestArrivalRateInstitutes = response.data.lowestArrivalRateInstitutes
         const temp = response.data.TodayCount
         const firstKey = Object.keys(temp)[0] // 获取第一个键
+        this.predict_data = response.data.TodaypredictCount.predicted_count
         this.todayCount = temp[firstKey]
-        this.predict_data = response.data.PredictCount[0]
         this.chinaMapFun() // 获取数据后初始化地图
         // this.initEcharts_dormitory(); // 初始化柱状图
         this.initEcharts_institute()
@@ -224,7 +224,7 @@ export default {
             type: 'bar', // 形状为柱状图
             data: this.instituteYdata, // 数据
             itemStyle: {
-              color: '#33BEFF' // 设置柱子的颜色
+              color: '#087D9F' // 设置柱子的颜色
             },
             label: {
               show: true, // 显示数据标签
@@ -323,7 +323,7 @@ export default {
             type: 'line',
             data: this.timeYdata, // 数据
             itemStyle: {
-              color: '#33BEFF' // 设置柱子的颜色
+              color: '#087D9F' // 设置柱子的颜色
             },
             label: {
               show: true, // 显示数据标签
@@ -348,7 +348,7 @@ export default {
           left: 'center'
         },
         grid: {
-          top: '30%', // 调整上边距
+          top: '50%', // 调整上边距
           bottom: '20%', // 调整下边距
           left: '80%', // 调整左边距
           right: '20%' // 调整右边距
@@ -363,12 +363,12 @@ export default {
             { name: '阶段2', max: this.stateYdata[3] },
             { name: '阶段3', max: this.stateYdata[3] }
           ],
-          radius: '50%', // 设置雷达图的大小
+          radius: '55%', // 设置雷达图的大小
           center: ['50%', '70%'] // 设置雷达图的位置
         },
         axisName: {
-          color: '#000',
-          fontSize: 14,
+          color: '#087D9F',
+          fontSize: 30,
           fontWeight: 'bold'
         },
         series: [
@@ -382,13 +382,13 @@ export default {
               }
             ],
             areaStyle: {
-              opacity: 0.1 // 设置区域填充透明度
+              opacity: 0.3 // 设置区域填充透明度
             },
             itemStyle: {
-              color: '#F9713C' // 设置雷达图数据点颜色
+              color: '#087D9F' // 设置雷达图数据点颜色
             },
             lineStyle: {
-              color: '#F9713C' // 设置雷达图连线颜色
+              color: '#087D9F' // 设置雷达图连线颜色
             }
           }
         ]
@@ -413,7 +413,8 @@ export default {
       const option = {
         title: {
           text: '已报到/未报到',
-          left: 'center'
+          left: 'center',
+          fontSize: 10
         },
         tooltip: {
           trigger: 'item',
@@ -421,28 +422,33 @@ export default {
         },
         series: [
           {
-            name: '报到情况',
+            name: '报道情况',
             type: 'pie',
             center: ['50%', '60%'],
             radius: ['30%', '60%'], // 设置内外半径，形成环状
             avoidLabelOverlap: false,
             label: {
               show: false,
-              position: 'center',
-              color: '#000'
+              position: 'center'
             },
             emphasis: {
               label: {
                 show: false,
-                fontSize: '20',
+                fontSize: '30',
                 fontWeight: 'bold'
               }
             },
             labelLine: {
               show: false
             },
-            data: pieData
-          }
+            data: pieData,
+            itemStyle: {
+              color: (params) => {
+                // 使用一个颜色数组，根据数据索引设置颜色
+                const colorList = ['#087D9F', '#9F2A08']
+                return colorList[params.dataIndex % colorList.length]
+              }
+            }}
         ]
       }
 
@@ -467,7 +473,8 @@ export default {
       const option = {
         title: {
           text: '已入住/未入住',
-          left: 'center'
+          left: 'center',
+          fontSize: 8
 
         },
         tooltip: {
@@ -476,7 +483,7 @@ export default {
         },
         series: [
           {
-            name: '入住情况',
+            name: '报道情况',
             type: 'pie',
             center: ['50%', '60%'], // 设置图表中心位置
             radius: ['30%', '60%'], // 设置内外半径，形成环状
@@ -495,7 +502,14 @@ export default {
             labelLine: {
               show: false
             },
-            data: pieData
+            data: pieData,
+            itemStyle: {
+              color: (params) => {
+                // 使用一个颜色数组，根据数据索引设置颜色
+                const colorList = ['#087D9F', '#9F2A08']
+                return colorList[params.dataIndex % colorList.length]
+              }
+            }
           }
         ]
       }
@@ -524,7 +538,7 @@ export default {
       // 准备图表数据
       const chartData = courses.map(course => ({
         value: course.enrollmentRate * 100, // 转换为百分比
-        name: course.courseName
+        name: `${course.courseName} (${course.courseId})`
       }))
 
       const chart = echarts.init(document.getElementById('mychart7'))
@@ -537,21 +551,14 @@ export default {
           trigger: 'item',
           formatter: '{b} : {c}%' // 显示百分比
         },
-        yAxis: {
+        xAxis: {
           type: 'value',
           name: '选课率 (%)'
         },
-        xAxis: {
+        yAxis: {
           type: 'category',
-          data: chartData.map(item => item.name),
-          axisLabel: {
-            interval: 0, // 强制显示所有标签
-            rotate: 30, // 旋转标签，避免重叠
-            textStyle: {
-              fontSize: 8 // 设置字体大小
-            }}
+          data: chartData.map(item => item.name)
         },
-
         series: [
           {
             name: '选课率',
@@ -748,14 +755,16 @@ export default {
           formatter: (array, returnData, callback) => {
             if (isNaN(array.value)) {
               if (this.cityArr.includes(array.name)) {
-                return '人数: 暂无'
+                return array.name + '<bar>: 暂无'
               } else {
-                return '人数: 暂无' + '<br/>'
+                return array.name + '<bar>: 暂无'
               }
             } else {
               const result =
-                '<div style="display: flex"><div style="float:left;">人数: ' +
-                array.value
+                  '<div style="display: flex; flex-direction: column;">' +
+                    '<div style="float:left;">' + array.name + '</div>' +
+                    '<div style="float:left;">人数: ' + array.value + '</div>' +
+                  '</div>'
               return result
             }
           },
@@ -780,8 +789,8 @@ export default {
             itemStyle: {
               areaColor: '#33BEFF',
               borderColor: '#0f0f0f',
-              normal: { label: { show: true }, areaColor: '#33BEFF' },
-              emphasis: { label: { show: true }, areaColor: '#0458EC' }
+              normal: { label: { show: true }, areaColor: '#087D9F' },
+              emphasis: { label: { show: true }, areaColor: '#9F2A08' }
             },
             emphasis: {
               // 强调的样式，也就是鼠标移入后的样式==高亮状态下的多边形和标签样式。
@@ -791,7 +800,7 @@ export default {
             },
             label: {
               normal: {
-                show: true, // 是否显示标签，这里显示的就是省份的名字。默认就是false
+                show: false, // 是否显示标签，这里显示的就是省份的名字。默认就是false
                 textStyle: {
                   fontWeight: 300,
                   color: '#000000', // 值域文字颜色
@@ -817,7 +826,7 @@ export default {
       if (this.pyName === 'china') {
         this.myEchartsOfChina.setOption(options)
       } else {
-        this.myEchartsOfChina.setOption(options1)
+        this.myEchartsOfChina.setOption(options)
       }
     }
   }
@@ -849,7 +858,6 @@ export default {
   overflow: hidden; /* 隐藏溢出的内容 */
   text-align: center; /* 文字居中 */
   align-items: center; /* 垂直居中 */
-  font-size: medium;
 
 }
 .text_mid {
@@ -865,7 +873,7 @@ export default {
   overflow: hidden; /* 隐藏溢出的内容 */
   text-align: center; /* 文字居中 */
   align-items: center; /* 垂直居中 */
-  font-size: medium;
+
 }
 .pie1{
   padding:5px;
@@ -940,10 +948,9 @@ export default {
   width: 100%;
   width: 100%;
   border: 2px solid #000;
-  justify-content: flex-start;
+  align-items:flex-start;
   flex-direction: column;
-  white-space: nowrap; /* 防止换行 */
-  align-items: center; /* 垂直居中 */
+
 }
 .text_3{
   padding: 5px;
@@ -980,12 +987,9 @@ export default {
   margin: 5px;
   width: 100%;
   padding: 5px;
-  white-space: nowrap; /* 防止换行 */
-  overflow: hidden; /* 隐藏溢出的内容 */
+  font-size: large;
+  font-weight: 5000;
   text-align: center; /* 文字居中 */
-  align-items: center; /* 垂直居中 */
-  font-size: 5vh;
-  font-Weight: 2px;
 }
 .responsive-text {
   font-size: calc(1.5vw + 1.5vh); /* 根据视口宽度和高度计算字体大小 */

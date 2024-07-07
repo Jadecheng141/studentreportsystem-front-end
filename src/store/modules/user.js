@@ -42,14 +42,20 @@ const actions = {
     return new Promise((resolve, reject) => {
       login(formData)
         .then((response) => {
-          if (response.status === 200) {
+          console.log('登录response', response)
+          if (response.data.status === 'success') {
             sessionStorage.setItem('role', response.data.role)
             sessionStorage.setItem('username', response.data.username)
+            sessionStorage.setItem('avatar', response.data.url)
+            sessionStorage.setItem('accountname', response.data.accountName)
+            sessionStorage.setItem('email', response.data.email)
             commit('SET_NAME', response.data.username)
             commit('SET_ROLES', response.data.role)
+            commit('SET_AVATAR', response.data.url)
+            console.log('登录url', sessionStorage.getItem('avatar'))
             resolve(response)
           } else {
-            return reject('Verification failed, please Login again.')
+            return reject('账号与密码不匹配')
           }
         })
         .catch((error) => {

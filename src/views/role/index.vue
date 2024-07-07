@@ -8,24 +8,26 @@
         </div>
         <el-table
           :data="savedRows"
-          style="width: 100%">
+          style="width: 100%"
+        >
           <el-table-column
             prop="courseId"
             label="课程编码"
             width="120"
-            align="center">
-          </el-table-column>
+            align="center"
+          />
           <el-table-column
             prop="courseName"
             label="名称"
-            align="center">
-          </el-table-column>
+            align="center"
+          />
           <el-table-column
             label="操作"
             width="100"
-            align="center">
+            align="center"
+          >
             <template slot-scope="scope">
-              <el-button type="danger" @click="removeSavedRow(scope.$index, scope.row)" class="delete-button">删除</el-button>
+              <el-button type="danger" class="delete-button" @click="removeSavedRow(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -45,61 +47,62 @@
           :data="tableData"
           tooltip-effect="dark"
           style="width: 100%"
-          @selection-change="handleSelectionChange">
+          @selection-change="handleSelectionChange"
+        >
           <el-table-column
             type="selection"
-            width="55">
-          </el-table-column>
+            width="55"
+          />
           <el-table-column
             prop="courseId"
             label="课程编码"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="courseName"
             label="课程名称"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="score"
             label="学分"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="classRoomNo"
             label="教室编号"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="courseType"
             label="课程类型"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="currentNumOfStu"
             label="当前学生人数"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="ceilingOfPersonnel"
             label="人数上限"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="status"
             label="状态"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="teacherName"
             label="教师姓名"
-            width="120">
-          </el-table-column>
+            width="120"
+          />
           <el-table-column
             prop="introduction"
             label="课程简介"
-            width="200">
-          </el-table-column>
+            width="200"
+          />
         </el-table>
         <div class="button-group">
           <el-button @click="saveSelection()">确定选择</el-button>
@@ -111,7 +114,7 @@
 </template>
 
 <script>
-import { getCourses, getSelectedCourses, saveSelectedCourses, deleteCourse } from '@/api/selectcourse';
+import { getCourses, getSelectedCourses, saveSelectedCourses, deleteCourse } from '@/api/selectcourse'
 
 export default {
   data() {
@@ -119,84 +122,84 @@ export default {
       tableData: [],
       multipleSelection: [],
       savedRows: []
-    };
+    }
   },
   mounted() {
-    this.fetchTableData(); // 组件挂载时获取数据
-    this.loadSavedRows();
+    this.fetchTableData() // 组件挂载时获取数据
+    this.loadSavedRows()
   },
   methods: {
     async fetchTableData() {
       try {
-        const response = await getCourses();
-        this.tableData = response.data;
-         console.log('response:',response.data);
-        this.syncTableSelection(); // 同步保存的行与表格选择状态
+        const response = await getCourses()
+        this.tableData = response.data
+        console.log('response:', response.data)
+        this.syncTableSelection() // 同步保存的行与表格选择状态
       } catch (error) {
-        console.error('获取表格数据出错:', error);
+        console.error('获取表格数据出错:', error)
       }
     },
     async loadSavedRows() {
       try {
-        const response = await getSelectedCourses();
-        this.savedRows = response.data;
-        this.syncTableSelection(); // 同步保存的行与表格选择状态
+        const response = await getSelectedCourses()
+        this.savedRows = response.data
+        this.syncTableSelection() // 同步保存的行与表格选择状态
       } catch (error) {
-        console.error('加载已选课程出错:', error);
+        console.error('加载已选课程出错:', error)
       }
     },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
       } else {
-        this.$refs.multipleTable.clearSelection();
+        this.$refs.multipleTable.clearSelection()
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
     async saveSelection() {
       try {
-        const selectedCourseIds = this.multipleSelection.map(row => row.courseId);
-        await saveSelectedCourses(selectedCourseIds);
+        const selectedCourseIds = this.multipleSelection.map(row => row.courseId)
+        await saveSelectedCourses(selectedCourseIds)
         this.multipleSelection.forEach(row => {
           if (!this.isRowSaved(row)) {
-            this.savedRows.push(row);
+            this.savedRows.push(row)
           }
-        });
-        this.syncTableSelection();
-        this.storeSavedRows(); // 更新本地存储
+        })
+        this.syncTableSelection()
+        this.storeSavedRows() // 更新本地存储
       } catch (error) {
-        console.error('保存选中的课程出错:', error);
+        console.error('保存选中的课程出错:', error)
       }
     },
     async removeSavedRow(index, row) {
       try {
-        await deleteCourse(row.courseId);
-        this.savedRows.splice(index, 1);
-        this.storeSavedRows(); // 更新本地存储
-        this.$refs.multipleTable.toggleRowSelection(row, false);
+        await deleteCourse(row.courseId)
+        this.savedRows.splice(index, 1)
+        this.storeSavedRows() // 更新本地存储
+        this.$refs.multipleTable.toggleRowSelection(row, false)
       } catch (error) {
-        console.error('删除选中的课程出错:', error);
+        console.error('删除选中的课程出错:', error)
       }
     },
     isRowSaved(row) {
-      return this.savedRows.some(savedRow => savedRow.courseId === row.courseId);
+      return this.savedRows.some(savedRow => savedRow.courseId === row.courseId)
     },
     storeSavedRows() {
-      localStorage.setItem('savedRows', JSON.stringify(this.savedRows));
+      localStorage.setItem('savedRows', JSON.stringify(this.savedRows))
     },
     syncTableSelection() {
       this.$nextTick(() => {
         this.savedRows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row, true);
-        });
-      });
+          this.$refs.multipleTable.toggleRowSelection(row, true)
+        })
+      })
     }
   }
-};
+}
 </script>
 
 <style>

@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       title: '新 生 报 道 系 统',
-      logo: 'https://s21.ax1x.com/2024/07/07/pkW1zM4.png'
+      logo: 'https://hgylyc.oss-cn-beijing.aliyuncs.com/logo.png'
     }
   }
 }

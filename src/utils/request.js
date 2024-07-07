@@ -53,8 +53,6 @@ instance.interceptors.response.use(
     return response
   },
   function (error) { // 失败的回调
-    // 超出 2xx 范围的状态码都会触发该函数。
-    // 对响应错误做点什么
     if (error.response.status === 401) {
     //   $router.push('/login')
 

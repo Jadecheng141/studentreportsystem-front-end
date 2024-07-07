@@ -142,8 +142,9 @@ export default {
       const formData = new FormData()
       formData.append('file', file.file)
       this.previewImage(file.file)
-      this.$axios.post('/api/information/upload', formData).then(response => {
-        if (response.status === 'success') {
+      this.$axios.post('/information/upload', formData).then(response => {
+        console.log('response:', response)
+        if (response.data.status === 'success') {
           this.$message.success('照片上传成功')
         } else {
           this.$message.error('照片上传失败')
@@ -187,6 +188,7 @@ export default {
         this.$message.error('请先上传照片')
         return
       }
+      console.log('传入信息', this.form)
       const formData = new FormData()
       console.log('studentName', this.form.name)
       formData.append('studentName', this.form.name)
@@ -202,6 +204,16 @@ export default {
       formData.append('emergencyContactTel', this.form.emergencyContactNumber)
       formData.append('captcha', this.captchaInput)
       console.log('上传报道信息:', formData)
+
+      // 打印 FormData 内容
+      for (const pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1])
+      }
+
+      // 或者使用 forEach 方法
+      formData.forEach((value, key) => {
+        console.log(key, value)
+      })
 
       // 提交报道信息
       try {

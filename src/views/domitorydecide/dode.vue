@@ -151,7 +151,7 @@ export default {
         })
         .catch(error => {
           console.error('获取宿舍信息失败:', error)
-          this.$message.error('获取宿舍信息失败')
+          this.$message.error('获取宿舍信息失败,请先填写报道信息')
         })
     },
     handleCheck(selectdorm) {

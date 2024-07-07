@@ -18,8 +18,8 @@
       </el-main>
       <el-footer class="input-area">
         <el-input
-          type="textarea"
           v-model="newMessage"
+          type="textarea"
           placeholder="请输入您的问题..."
           class="input"
           @keyup.enter.native="sendMessage"
@@ -35,50 +35,63 @@ export default {
   data() {
     return {
       newMessage: '', // 存储新消息内容
-      messages: [] // 存储所有消息
-    };
+      messages: [], // 存储所有消息
+      ws: null, // WebSocket 对象
+      userId: 'user123' // 当前用户的 ID，应根据实际情况设置
+    }
+  },
+  created() {
+    this.connectWebSocket()
   },
   methods: {
+    connectWebSocket() {
+      // 创建 WebSocket 连接
+      this.ws = new WebSocket('ws://121.36.218.207:8080/chat') // 请替换为实际的 WebSocket URL
+
+      // 连接打开事件
+      this.ws.onopen = () => {
+        console.log('WebSocket connection opened')
+        // 发送用户 ID 给服务器
+        this.ws.send(`connect:${this.userId}`)
+      }
+
+      // 连接关闭事件
+      this.ws.onclose = () => {
+        console.log('WebSocket connection closed')
+      }
+
+      // 接收到消息事件
+      this.ws.onmessage = (event) => {
+        const message = event.data
+        this.messages.push({
+          content: message,
+          isUser: false,
+          isSystem: false
+        })
+      }
+    },
     sendMessage() {
       if (this.newMessage.trim() !== '') {
-        // 将新消息添加到消息列表中
+        // 构建消息内容，假设接收者是 "user456"
+        const toUser = '10000000' // 目标用户 ID，应根据实际情况设置
+        const message = `to:${toUser}:${this.newMessage}`
+
+        // 将消息发送到服务器
+        this.ws.send(message)
+
+        // 添加到消息列表中
         this.messages.push({
           content: this.newMessage,
           isUser: true,
-          isSystem: false,
-        });
-
-        // 模拟发送请求到后端并接收回复
-        this.simulateBackendResponse(this.newMessage);
+          isSystem: false
+        })
 
         // 清空输入框
-        this.newMessage = '';
+        this.newMessage = ''
       }
-    },
-    simulateBackendResponse(userMessage) {
-      // 模拟后端延迟
-      setTimeout(() => {
-        const reply = this.getReply(userMessage);
-        this.messages.push({
-          content: reply,
-          isUser: false,
-          isSystem: false,
-        });
-      }, 1000);
-    },
-    getReply(userMessage) {
-      // 模拟简单的回复逻辑，可以根据实际需求调整
-      const replies = [
-        '您好，有什么我可以帮助您的吗？',
-        '请您详细描述一下您的问题。',
-        '感谢您的咨询，我们会尽快处理您的问题。',
-        '请稍等，我正在为您查询相关信息。',
-        '您的问题已经记录，我们会尽快回复您。'
-      ];
-      return replies[Math.floor(Math.random() * replies.length)];
     }
   }
-};
+}
 </script>
 
 <style>

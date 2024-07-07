@@ -14,7 +14,7 @@
         <div class="right-menu">
           <el-dropdown class="avatar-container" trigger="click">
             <div class="avatar-wrapper">
-              <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+              <img :src="avatarUrl" class="user-avatar">
               <i class="el-icon-caret-bottom" style="color:#ffffff;" />
             </div>
             <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -71,6 +71,17 @@ export default {
   },
   mixins: [ResizeMixin],
   computed: {
+    avatarUrl() {
+      const avatar = sessionStorage.getItem('avatar')
+      // 如果 avatar 为空，则使用默认头像
+      const defaultAvatar = 'https://hgylyc.oss-cn-beijing.aliyuncs.com/logo.png' // 这里替换为你的默认头像的路径
+
+      if (avatar === 'null') {
+        return defaultAvatar
+      } else {
+        return avatar
+      }
+    },
     ...mapGetters([
       'second_routes',
       'third_routes',

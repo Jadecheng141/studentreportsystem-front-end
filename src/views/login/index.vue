@@ -177,8 +177,8 @@ export default {
 
     return {
       loginForm: {
-        username: '20221409',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [
@@ -319,11 +319,12 @@ export default {
       this.$store
         .dispatch('user/login', this.loginForm)
         .then(() => {
+          this.$message.success('登录成功')
           this.$router.push({ path: this.redirect || '/' })
           this.loading = false
         })
         .catch((error) => {
-          this.$message.error(error.message || '登录失败，请重试')
+          this.$message.error(error.message || '账号名与密码不匹配')
           this.loading = false
         })
     },
@@ -356,7 +357,7 @@ export default {
           // 调用 API 发送注册请求
           signup(formData)
             .then(response => {
-              if (response.status === 'success') {
+              if (response.data.status === 'success') {
                 console.log('注册成功:', response)
                 this.$message.success('注册成功')
               } else {
@@ -485,9 +486,13 @@ export default {
           // 调用 API 发送找回密码请求
           findPassword(formData)
             .then(response => {
-              console.log('找回密码成功:', response)
-              this.$message.success('找回密码成功')
-              this.ClosefindpasswordForm()
+              if (response.data.status === 'success') {
+                console.log('找回密码成功:', response)
+                this.$message.success('找回密码成功')
+                this.ClosefindpasswordForm()
+              } else {
+                this.$message.error('验证码错误')
+              }
             })
             .catch(error => {
               console.error('找回密码失败:', error)

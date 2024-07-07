@@ -12,8 +12,8 @@
           v-for="item in options_college"
           :key="item.value"
           :label="item.label"
-          :value="item.value">
-        </el-option>
+          :value="item.value"
+        />
       </el-select>
       <el-input
         v-model="listQuery.teacherId"
@@ -34,8 +34,8 @@
           size="small"
           type="primary"
           icon="el-icon-search"
-          @click="search"
           class="button-item"
+          @click="search"
         >
           搜索
         </el-button>
@@ -43,8 +43,8 @@
           size="small"
           type="primary"
           icon="el-icon-refresh"
-          @click="refresh"
           class="button-item"
+          @click="refresh"
         >
           重置
         </el-button>
@@ -109,8 +109,8 @@
     <pagination
       v-show="total > 0"
       :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
+      :page.sync="currentPage"
+      :limit.sync="pageSize"
       @pagination="fetchData"
     />
     <el-dialog
@@ -141,15 +141,15 @@
                   v-for="item in options_college"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="电子邮箱">
               <el-input v-model="temp.temail" placeholder="请输入电子邮箱" :disabled="dialogType === '查看'" />
             </el-form-item>
             <el-form-item label="照片">
-            <!--  <el-upload
+              <!--  <el-upload
                 action="#"
                 list-type="picture-card"
                 :file-list="fileList"
@@ -161,14 +161,14 @@
               >
                 <i class="el-icon-plus" v-if="dialogType !== '查看'"></i>
               </el-upload> -->
-                <img :src="temp.figureUrl" alt="">
+              <img :src="temp.figureUrl" alt="">
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">
               <el-input
-                type="textarea"
                 v-model="temp.introduction"
+                type="textarea"
                 placeholder="请输入个人简介"
                 rows="10"
                 :disabled="dialogType === '查看'"
@@ -194,8 +194,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { deepClone } from '@/utils'
-import { getlist, searchCourses,detailCourses } from '@/api/s_check_teacher'
+import { getlist, searchCourses, detailCourses } from '@/api/s_check_teacher'
 const _temp = {
   teacherId: '',
   teacherName: '',
@@ -204,7 +203,7 @@ const _temp = {
   temail: '',
   figureUrl: '',
   introduction: '',
-  imageBytes:''
+  imageBytes: ''
 }
 
 export default {
@@ -234,7 +233,8 @@ export default {
         temail: '',
         figureUrl: '',
         introduction: '',
-        imageBytes:''
+        imageBytes: ''
+
       },
       total: 0,
       list: [],
@@ -245,7 +245,9 @@ export default {
       temp: Object.assign({}, _temp),
       loading: false,
       dialogImageUrl: '',
-      fileList: []
+      fileList: [],
+      currentPage: 1,
+      pageSize: 10
     }
   },
   created() {
@@ -253,16 +255,19 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.listLoading = true;
+      this.listLoading = true
+      const formData = new FormData()
+      formData.append('currentPage', this.currentPage)
+      formData.append('pageSize', this.pageSize)
       try {
-        const response = await getlist(this.listQuery);
-        this.list = response.data;
-        this.filteredList = this.list;
-        this.total = this.list.length;
+        const response = await getlist(formData)
+        this.list = response.data.teachers
+        this.filteredList = this.list
+        this.total = response.data.total
       } catch (error) {
-        console.error('Error fetching teacher list:', error);
+        console.error('Error fetching teacher list:', error)
       } finally {
-        this.listLoading = false;
+        this.listLoading = false
       }
     },
     resetTemp() {
@@ -275,53 +280,53 @@ export default {
     },
     async view(scope) {
       try {
-        const response = await detailCourses(scope.row.teacherId);
-        this.temp = response.data;
-        this.dialogType = '查看';
-        this.dialogVisible = true;
+        const response = await detailCourses(scope.row.teacherId)
+        this.temp = response.data
+        this.dialogType = '查看'
+        this.dialogVisible = true
       } catch (error) {
-        console.error('Failed to fetch course details:', error);
+        console.error('Failed to fetch course details:', error)
       }
     },
     submit() {
       this.$refs.dataForm.validate(valid => {
         if (valid) {
-          const index = this.list.findIndex(item => item.teacherId === this.temp.teacherId);
+          const index = this.list.findIndex(item => item.teacherId === this.temp.teacherId)
           if (index !== -1) {
-            this.list.splice(index, 1, this.temp);
+            this.list.splice(index, 1, this.temp)
           } else {
-            this.list.push(this.temp);
+            this.list.push(this.temp)
           }
-          this.filteredList = this.list;
-          this.dialogVisible = false;
+          this.filteredList = this.list
+          this.dialogVisible = false
         }
       })
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
+      this.dialogImageUrl = file.url
     },
     handleRemove(file, fileList) {
-      this.temp.photo = '';
-      this.fileList = fileList;
+      this.temp.photo = ''
+      this.fileList = fileList
     },
     handleSuccess(response, file, fileList) {
-      this.temp.photo = URL.createObjectURL(file.raw);
-      this.fileList = fileList;
+      this.temp.photo = URL.createObjectURL(file.raw)
+      this.fileList = fileList
     },
     beforeUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+        this.$message.error('上传头像图片只能是 JPG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+        this.$message.error('上传头像图片大小不能超过 2MB!')
       }
-      return isJPG && isLt2M;
+      return isJPG && isLt2M
     },
     async search() {
-      await this.fetchFilteredData();
+      await this.fetchFilteredData()
     },
     async refresh() {
       this.listQuery = {
@@ -332,20 +337,28 @@ export default {
         temail: '',
         figureUrl: '',
         introduction: '',
-        imageBytes:''
+        imageBytes: ''
       }
-      await this.fetchData();
+      await this.fetchData()
     },
     async fetchFilteredData() {
-      this.listLoading = true;
+      this.listLoading = true
+      const formData = new FormData()
+      for (const key in this.listQuery) {
+        if (Object.prototype.hasOwnProperty.call(this.listQuery, key)) {
+          formData.append(key, this.listQuery[key])
+        }
+      }
+      formData.append('currentPage', this.currentPage)
+      formData.append('pageSize', this.pageSize)
       try {
-        const response = await searchCourses(this.listQuery);
-        this.filteredList = response.data;
-        this.total = this.filteredList.length;
+        const response = await searchCourses(formData)
+        this.filteredList = response.data.teachers
+        this.total = response.data.total
       } catch (error) {
-        console.error('Failed to fetch filtered data:', error);
+        console.error('Failed to fetch filtered data:', error)
       } finally {
-        this.listLoading = false;
+        this.listLoading = false
       }
     }
   }
