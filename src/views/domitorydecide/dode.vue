@@ -87,7 +87,7 @@
         </table> -->
 
       </div>
-      <div>
+      <div class="buttoncontainer">
         <button class="submit-button" @click="submitSelection">提交</button>
       </div>
       <el-dialog class="signup-dialog" title="宿舍详情" :visible.sync="isCheck" destroy-on-close @close="CloseCheckForm">
@@ -296,7 +296,13 @@ td {
   text-decoration: underline;
 }
 
+.buttoncontainer{
+    display: flex;
+margin-right: 20px;
+justify-content: flex-end;
+}
 .submit-button {
+
  margin-bottom: 50px;
   padding: 10px 30px;
   background-color: #007bff;

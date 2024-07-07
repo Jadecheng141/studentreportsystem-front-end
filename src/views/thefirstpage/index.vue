@@ -6,15 +6,16 @@
       <button
         v-for="(rectangle, index) in singlerec"
         :key="index"
+        class="single-button"
         @click="setCurrentRectangle(rectangle.id)"
-         class="single-button">
+      >
         学校简介
       </button>
       <button
         v-for="(rectangle, index) in rectangles"
         :key="index"
-        @click="setCurrentRectangle(rectangle.id)"
         class="rectangle-button"
+        @click="setCurrentRectangle(rectangle.id)"
       >
         {{ rectangle.title }}
       </button>
@@ -122,29 +123,32 @@ export default {
         }
         // 继续添加其他矩形的信息
       ],
-      singlerec:[
+      singlerec: [
         {
           id: 'rectangle1',
           title: '学校简介',
           image1: require('@/images/school.jpg'),
           content1: '重庆大学是中央直管、教育部直属的全国重点大学。学校创办于1929年，提出建设“完备弘深之大学”的愿景，到20世纪40年代发展成为文理工商法医各学科齐全的综合性大学。',
-          content2:'经过1952年全国院系调整，成为以工科为主的多科性大学。1960年被确定为全国重点大学。改革开放后，学校进行了全面的恢复调整和改革建设，成为一所以工为主、多学科协调发展的高校。',
+          content2: '经过1952年全国院系调整，成为以工科为主的多科性大学。1960年被确定为全国重点大学。改革开放后，学校进行了全面的恢复调整和改革建设，成为一所以工为主、多学科协调发展的高校。',
           top: 120,
           right: 105
         }
-        ],
-      currentRectangle: 'rectangle1', // 控制当前显示的矩形
-    };
+      ],
+      currentRectangle: 'rectangle1' // 控制当前显示的矩形
+    }
   },
   methods: {
     setCurrentRectangle(rectangleId) {
-      this.currentRectangle = rectangleId;
-    },
-  },
-};
+      this.currentRectangle = rectangleId
+    }
+  }
+}
 </script>
 
 <style scoped>
+.app-container {
+  overflow-y: auto;
+}
 .static-image {
   position: absolute;
   padding: 5px;

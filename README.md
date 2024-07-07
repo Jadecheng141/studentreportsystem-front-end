@@ -37,8 +37,6 @@ npm install --registry=https://registry.npm.taobao.org
 npm run dev
 ```
 
-浏览器访问: [http://localhost:9529](http://localhost:9529)
-
 ## 发布
 
 ```bash

@@ -6,7 +6,7 @@
       </div>
       <div class="form-container">
         <form @submit.prevent="submitForm">
-          <div class="form-group">
+          <div class="photo-container">
             <label class="photolabel" for="photo">照片:</label>
             <el-upload
               class="avatar-uploader"
@@ -244,6 +244,13 @@ html, body {
   overflow: hidden; /* 禁止滚动 */
 }
 
+.photo-container{
+    display: flex;
+justify-content: center;
+  margin-bottom: 10px;
+
+}
+
 .container {
   display: flex;
   flex-direction: column; /* 垂直排列子项 */
@@ -298,8 +305,11 @@ justify-content: center;
     margin-right:20px
 }
 .form-container{
-    align-items: flex-start;
-      display: flex;
+     border-radius: 10px; /* 设置四角圆角，值为 10px */
+    background-color: rgb(197, 199, 201);
+    padding-left: 50px;
+ align-items: flex-start;
+  display: flex;
   flex-direction: column; /* 垂直排列子项 */
 }
 
@@ -316,6 +326,7 @@ select {
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
+  margin-left: 30px;
 }
 
 .submit-button {

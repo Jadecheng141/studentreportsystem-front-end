@@ -149,7 +149,7 @@ export default {
 
     async fetchMapData() {
       try {
-        const response = await axios.get('http://localhost:8080/administrator/data')
+        const response = await axios.get('api/administrator/data')
         console.info('Full response:', response) // 打印完整的响应
         console.info('Data:', response.data) // 打印响应中的数据
         this.get_time

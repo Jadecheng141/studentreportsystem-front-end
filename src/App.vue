@@ -11,10 +11,10 @@ export default {
 </script>
 
 <style>
-html, body {
+html {
   margin: 0;
   height: 100%;
-  overflow: hidden; /* 禁止滚动 */
+
 }
 
 </style>
