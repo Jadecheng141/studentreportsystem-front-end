@@ -172,7 +172,7 @@
             <el-form-item label="电子邮箱">
               <el-input v-model="addTemp.temail" placeholder="请输入电子邮箱" />
             </el-form-item>
-            <el-form-item label="照片">
+            <!-- <el-form-item label="照片">
               <el-upload
                 class="avatar-uploader"
                 action=" "
@@ -185,7 +185,7 @@
               <!--              <el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
               </el-dialog> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">
@@ -244,7 +244,7 @@
             <el-form-item label="电子邮箱">
               <el-input v-model="editTemp.temail" placeholder="请输入电子邮箱" />
             </el-form-item>
-            <el-form-item label="照片">
+          <!--  <el-form-item label="照片">
               <el-upload
                 class="avatar-uploader"
                 action=" "
@@ -257,7 +257,7 @@
               <el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
               </el-dialog>
-            </el-form-item>
+            </el-form-item> -->
           </el-col>
           <el-col :span="12">
             <el-form-item label="个人简介">

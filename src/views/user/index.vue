@@ -15,7 +15,7 @@
       </el-select>
 
       <!-- Filled Select -->
-      <el-select
+      <!-- <el-select
         v-model="listQuery.filled"
         size="small"
         placeholder="是否选满"
@@ -24,7 +24,7 @@
       >
         <el-option label="是" :value="true" />
         <el-option label="否" :value="false" />
-      </el-select>
+      </el-select> -->
 
       <!-- Institution Select -->
       <el-select v-model="listQuery.institution" size="small" placeholder="开课学院" class="filter-item">
@@ -60,7 +60,8 @@
         <el-option
           v-for="item in options_time"
           :key="item.value"
-          :label="item.label">
+          :label="item.label"
+          :value="item.value">
         </el-option>
       </el-select>
 
@@ -185,7 +186,6 @@
       </el-table-column>
       <el-table-column
         label="开课学期"
-        width="160"
         align="center"
       >
         <template slot-scope="scope">
@@ -194,7 +194,7 @@
       </el-table-column>
       <el-table-column
         label="状态"
-        width="100"
+        width="110"
         align="center"
       >
         <template slot-scope="scope">
@@ -291,8 +291,8 @@ export default {
       ],
       options_time: [
         { value: '16', label: '16' },
-        { value: '24', label: '24' },
-        { value: '32', label: '32' }
+        { value: '32', label: '32' },
+        { value: '40', label: '40' }
       ],
       options_academy: [
         { value: '计算机学院', label: '计算机学院' },
@@ -440,7 +440,7 @@ export default {
   text-align: center;
 }
 .available {
-  background-color: green;
+  background-color: Lime;
 }
 .not-available {
   background-color: red;

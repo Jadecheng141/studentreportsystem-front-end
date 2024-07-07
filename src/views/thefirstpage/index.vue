@@ -1,87 +1,72 @@
 <template>
   <div class="app-container">
-    <!-- 包含按钮的容器 -->
+    <!-- 按钮容器 -->
     <div class="buttons-container">
-      <!-- 切换按钮 -->
+      <!-- 单独按钮 -->
       <button
         v-for="(rectangle, index) in singlerec"
         :key="index"
-        class="single-button"
         @click="setCurrentRectangle(rectangle.id)"
+        class="single-button"
       >
         学校简介
       </button>
+      <!-- 动态按钮 -->
       <button
         v-for="(rectangle, index) in rectangles"
         :key="index"
-        class="rectangle-button"
         @click="setCurrentRectangle(rectangle.id)"
+        class="rectangle-button"
       >
         {{ rectangle.title }}
       </button>
     </div>
-  <div>
-    <img :src="staticImageUrl" alt="静态图片" class="static-image">
 
-    <!-- 六个蓝色矩形部分 -->
+    <!-- 静态图片 -->
     <div>
-    <div
-      v-for="(rectangle, index) in singlerec"
-      v-if="currentRectangle === rectangle.id"
-      :key="index"
-      class="blue-rectangle"
-      :style="{
-        top: rectangle.top + 'px',
-        right: rectangle.right + 'px',
-        display: currentRectangle === rectangle.id ? 'block' : 'none'
-      }"
-    >
-      <div class="white-rectangle">
-        <h3 class="rectangle-title">{{ rectangle.title }}</h3>
-        <img :src="rectangle.image1" alt="学校图片" class="school-image1">
-        <p class="rectangle-text1">
-          {{ rectangle.content1 }}
-        </p>
-        <p class="rectangle-text2">
-          {{ rectangle.content2 }}
-        </p>
+      <img :src="staticImageUrl" alt="静态图片" class="static-image">
+
+      <!-- 单独矩形内容 -->
+      <div>
+        <div
+          v-for="(rectangle, index) in singlerec"
+          v-if="currentRectangle === rectangle.id"
+          :key="index"
+          class="blue-rectangle"
+        >
+          <div class="white-rectangle">
+            <h3 class="rectangle-title">{{ rectangle.title }}</h3>
+            <img :src="rectangle.image1" alt="学校图片" class="school-image1">
+            <p class="rectangle-text1">{{ rectangle.content1 }}</p>
+            <p class="rectangle-text2">{{ rectangle.content2 }}</p>
+          </div>
+        </div>
       </div>
     </div>
-</div>
-</div>
+
+    <!-- 动态矩形内容 -->
     <div
       v-for="(rectangle, index) in rectangles"
       v-if="currentRectangle === rectangle.id"
       :key="index"
       class="blue-rectangle transition-all"
-      :style="{
-        top: rectangle.top + 'px',
-        right: rectangle.right + 'px',
-        display: currentRectangle === rectangle.id ? 'block' : 'none'
-      }"
     >
       <div class="white-rectangle">
         <h3 class="rectangle-title">{{ rectangle.title }}</h3>
         <img :src="rectangle.image1" alt="学校图片" class="school-image1">
         <img :src="rectangle.image2" alt="学校图片" class="school-image2">
-        <p class="rectangle-text1">
-          {{ rectangle.content1 }}
-        </p>
-        <p class="rectangle-text2">
-          {{ rectangle.content2 }}
-        </p>
+        <p class="rectangle-text1">{{ rectangle.content1 }}</p>
+        <p class="rectangle-text2">{{ rectangle.content2 }}</p>
       </div>
     </div>
-
   </div>
 </template>
-
 <script>
 export default {
   data() {
     return {
-      staticImageUrl: require('@/images/schoolmap.jpg'),
-      rectangles: [
+      staticImageUrl: require('@/images/schoolmap.jpg'), // 静态图片URL
+      rectangles: [ // 动态矩形数组
         {
           id: 'rectangle2',
           title: '教学楼',
@@ -124,9 +109,8 @@ export default {
           top: 120,
           right: 105
         }
-        // 继续添加其他矩形的信息
       ],
-      singlerec: [
+      singlerec: [ // 单独矩形数组
         {
           id: 'rectangle1',
           title: '学校简介',
@@ -137,29 +121,28 @@ export default {
           right: 105
         }
       ],
-      currentRectangle: 'rectangle1' // 控制当前显示的矩形
-    }
+      currentRectangle: 'rectangle1' // 当前显示的矩形ID
+    };
   },
   methods: {
+    // 设置当前显示的矩形ID
     setCurrentRectangle(rectangleId) {
-      this.currentRectangle = rectangleId
+      this.currentRectangle = rectangleId;
     }
   }
-}
+};
 </script>
-
 <style scoped>
-.app-container {
-  overflow-y: auto;
-}
+/* 静态图片样式 */
 .static-image {
   position: absolute;
   padding: 5px;
   width: 60%;
   height: 80%;
-  top:120px;
+  top: 120px;
 }
 
+/* 学校图片样式 */
 .school-image1 {
   padding: 5px;
   border-radius: 20px;
@@ -179,15 +162,18 @@ export default {
   right: 70px;
 }
 
+/* 蓝色矩形样式 */
 .blue-rectangle {
   position: absolute;
   border-radius: 70px;
-  top: 100px;
   width: 490px;
   height: 80%;
+  right: 50px;
+  top: 120px;
   background-image: linear-gradient(to bottom right, DodgerBlue, LightBlue);
 }
 
+/* 白色矩形样式 */
 .white-rectangle {
   position: absolute;
   border-radius: 60px;
@@ -198,22 +184,24 @@ export default {
   background-color: aliceblue;
 }
 
+/* 矩形标题样式 */
 .rectangle-title {
   color: black;
   font-size: 25px;
   position: absolute;
-  top: 10px; /* 调整标题的位置 */
-  left: 20px; /* 调整标题的位置 */
+  top: 10px;
+  left: 20px;
 }
 
+/* 矩形文本样式 */
 .rectangle-text1 {
   color: black;
   position: absolute;
   font-size: 17px;
   width: 80%;
   text-indent: 2em;
-  left: 40px; /* 调整文本的位置 */
-  top: 280px; /* 调整文本的位置 */
+  left: 40px;
+  top: 280px;
 }
 .rectangle-text2 {
   color: black;
@@ -221,30 +209,21 @@ export default {
   font-size: 17px;
   width: 80%;
   text-indent: 2em;
-  left: 40px; /* 调整文本的位置 */
-  top: 380px; /* 调整文本的位置 */
+  left: 40px;
+  top: 380px;
 }
+
+/* 按钮容器样式 */
 .buttons-container {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.rectangle-button {
+/* 按钮样式 */
+.rectangle-button, .single-button {
   padding: 10px;
   border: none;
-  /* background-color: #55aaff; */
-  background-image: linear-gradient(to bottom right, DodgerBlue, LightBlue);
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  flex: 1;
-  margin: 0 5px;
-}
-.single-button{
-  padding: 10px;
-  border: none;
-  /* background-color: #55aaff; */
   background-image: linear-gradient(to bottom right, DodgerBlue, LightBlue);
   color: white;
   border-radius: 5px;

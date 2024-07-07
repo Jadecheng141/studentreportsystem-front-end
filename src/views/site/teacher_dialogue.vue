@@ -1,24 +1,44 @@
-<template>
-  <div class="teacher-console">
-    <el-container>
-      <el-main class="chat-window">
-        <div class="sessions">
-          <div
-            v-for="(session, index) in sessions"
-            :key="index"
-            :class="{ session: true, active: session.isActive }"
-          >
-            <div class="session-header">
-              <span>{{ session.studentId }}</span>
-              <el-button size="mini" type="danger" @click="closeSession(index)">关闭</el-button>
-            </div>
-            <div class="messages">
-              <div
-                v-for="(message, msgIndex) in session.messages"
-                :key="msgIndex"
-                :class="{ message: true, 'user-message': message.isUser }"
-              >
-                {{ message.content }}
+<!-- <template>
+  <div class="app-container">
+    <div class="main">
+      <div class="student-list" v-show="showStudentList">
+        <el-card class="student-card" :body-style="{ padding: '20px' }">
+          <h3>学生提问列表</h3>
+          <el-table :data="students" @row-click="openChat" class="student-table">
+            <el-table-column prop="name" label="学生姓名" />
+            <el-table-column prop="question" label="提问" />
+          </el-table>
+        </el-card>
+      </div>
+
+      <el-dialog
+        title="人工客服"
+        :visible.sync="showChat"
+        width="80%"
+        :close-on-click-modal="false"
+        custom-class="chat-dialog"
+        :append-to-body="true"
+        @close="closeChat"
+      >
+        <div class="chat-content">
+          <div id="content" class="content">
+            <div v-for="(item, index) in currentChat" :key="index">
+              <div class="info_r info_default" v-if="item.type == 'leftinfo'">
+                <span class="circle circle_r"></span>
+                <div class="con_r con_text">
+                  <div>{{ item.content }}</div>
+                </div>
+                <div class="time_r">{{ item.time }}</div>
+              </div>
+
+              <div class="info_l" v-if="item.type == 'rightinfo'">
+                <div>
+                  <span class="con_l">{{ item.content }}</span>
+                  <span class="circle circle_l">
+                    <img src class="pic_l" />
+                  </span>
+                </div>
+                <div class="time_l">{{ item.time }}</div>
               </div>
             </div>
             <el-footer class="input-area">
@@ -50,72 +70,88 @@ export default {
     this.connectWebSocket()
   },
   methods: {
-    connectWebSocket() {
-      // 创建 WebSocket 连接
-      this.ws = new WebSocket('ws://121.36.218.207:8080/chat') // 请替换为实际的 WebSocket URL
+    openChat(row) {
+      this.showStudentList = false;
+      this.currentChat = [
+        {
+          type: "leftinfo",
+          time: this.getTodayTime(),
+          name: "student",
+          content: row.question,
+        },
+      ];
+      this.showChat = true;
+    },
+    closeChat() {
+      this.showChat = false;
+      this.showStudentList = true;
+    },
+    sentMsg() {
+      clearTimeout(this.timer);
+      this.showTimer();
+      let text = this.customerText.trim();
+      if (text !== "") {
+        var obj = {
+          type: "rightinfo",
+          time: this.getTodayTime(),
+          content: text,
+        };
+        this.currentChat.push(obj);
+        this.customerText = "";
+        this.$nextTick(() => {
+          var contentHeight = document.getElementById("content");
+          contentHeight.scrollTop = contentHeight.scrollHeight;
+        });
 
-      // 连接打开事件
-      this.ws.onopen = () => {
-        console.log('WebSocket connection opened')
-      }
-
-      // 连接关闭事件
-      this.ws.onclose = () => {
-        console.log('WebSocket connection closed')
-      }
-
-      // 接收到消息事件
-      this.ws.onmessage = (event) => {
-        const message = event.data
-        this.handleIncomingMessage(message)
+        // 模拟发送到后端并返回
+        setTimeout(() => {
+          this.receiveFromBackend({ content: "后端回复内容", time: this.getTodayTime() });
+        }, 1000);
       }
     },
-    handleIncomingMessage(message) {
-      // 解析消息，假设消息格式为 "studentId:message"
-      const [studentId, msgContent] = message.split(':', 2)
-
-      // 查找是否已有该 studentId 的会话
-      let session = this.sessions.find((sess) => sess.studentId === studentId)
-
-      if (!session) {
-        // 如果没有该会话，则创建一个新会话
-        session = {
-          studentId,
-          messages: [],
-          newMessage: '',
-          isActive: true
-        }
-        this.sessions.push(session)
-      }
-
-      // 添加新消息到会话
-      session.messages.push({
-        content: msgContent,
-        isUser: false
-      })
+    receiveFromBackend(data) {
+      let obj = {
+        type: "leftinfo",
+        time: data.time,
+        name: "robot",
+        content: data.content,
+      };
+      this.currentChat.push(obj);
+      this.$nextTick(() => {
+        var contentHeight = document.getElementById("content");
+        contentHeight.scrollTop = contentHeight.scrollHeight;
+      });
     },
-    sendMessage(session) {
-      if (session.newMessage.trim() !== '') {
-        // 构建消息内容
-        const message = `to:${session.studentId}:${session.newMessage}`
-        // 将消息发送到服务器
-        this.ws.send(message)
-
-        // 添加到会话消息列表中
-        session.messages.push({
-          content: session.newMessage,
-          isUser: true
-        })
-
-        // 清空输入框
-        session.newMessage = ''
-      }
+    showTimer() {
+      this.timer = setTimeout(this.endMsg, 1000 * 60);
     },
-    closeSession(index) {
-      this.sessions.splice(index, 1)
-    }
-  }
-}
+    endMsg() {
+      let happyEnding = {
+        type: "leftinfo",
+        time: this.getTodayTime(),
+        content: "会话已结束",
+      };
+      this.currentChat.push(happyEnding);
+      this.$nextTick(() => {
+        var contentHeight = document.getElementById("content");
+        contentHeight.scrollTop = contentHeight.scrollHeight;
+      });
+    },
+    getTodayTime() {
+      var day = new Date();
+      let seconds = day.getSeconds();
+      if (seconds < 10) {
+        seconds = "0" + seconds;
+      }
+      let minutes = day.getMinutes();
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+      let time = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()} ${day.getHours()}:${minutes}:${seconds}`;
+      return time;
+    },
+  },
+};
 </script>
 
 <style>

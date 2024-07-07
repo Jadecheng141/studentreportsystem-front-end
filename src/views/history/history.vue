@@ -48,6 +48,18 @@
     </div>
     </div>
   </el-collapse-item>
+  <el-collapse-item title="汪云松 1873—1958 重庆大学筹备委员会成员" name="5">
+    <div class="together">
+      <div class="image1">
+        <img :src="wang" alt="Static Image" class="static-image">
+      </div>
+    <div class="text1">
+      <p>
+      汪云松（1873—1958），字德薰，笔名五四难民，祖籍湖北，随父定居巴县。出生于重庆世家，为晚清的秀才。清末曾在外地做官，任过知县、知府及吉林省官银号总办、电灯总局总办等职。辛亥革命后返渝，随父经商，曾任浚川银行经理、大中银行总经理、重庆总商会副会长、会长，重庆参事会主席等职，先后帮助邓小平、聂荣臻、陈毅等赴法勤工俭学。重庆大学筹备委员会成员之一。
+      </p>
+    </div>
+    </div>
+  </el-collapse-item>
 </el-collapse>
 </template>
 <script>
@@ -58,6 +70,7 @@
         shen: require('@/images/沈.jpg'),
         lv: require('@/images/lv.jpg'),
         peng: require('@/images/peng.jpg'),
+        wang:require('@/images/汪.jpg'),
         activeNames: ['1']
       };
     },
