@@ -1,10 +1,13 @@
 <template>
   <div class="app-container">
     <div class="container">
-      <h1>基本信息录入</h1>
-      <form @submit.prevent="submitForm">
-        <div class="left-column">
+      <div class="header">
+        <h1>基本信息录入</h1>
+      </div>
+      <div class="form-container">
+        <form @submit.prevent="submitForm">
           <div class="form-group">
+            <label class="photolabel" for="photo">照片:</label>
             <el-upload
               class="avatar-uploader"
               action=" "
@@ -14,7 +17,6 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
-
           </div>
           <div class="form-group">
             <label for="name">姓名:</label>
@@ -55,8 +57,6 @@
             <label for="email">邮箱:</label>
             <input id="email" v-model="form.email" type="email" required>
           </div>
-        </div>
-        <div class="right-column">
 
           <div class="form-group">
             <label for="fatherName">父亲姓名:</label>
@@ -90,12 +90,11 @@
               <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha">
               <button @click="refreshCaptcha">刷新验证码</button>
             </div>
-
           </div>
-
           <button type="submit" class="submit-button" @click="submitInfo">提交</button>
-        </div>
-      </form>
+        </form>
+      </div>
+
     </div>
   </div>
 </template>
@@ -232,19 +231,26 @@ export default {
 </script>
 
 <style scoped>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden; /* 禁止滚动 */
+}
 .app-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden; /* 禁止滚动 */
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column; /* 垂直排列子项 */
+  align-items: flex-start;
   gap: 20px;
-  max-width: 1200px;
   width: 100%;
+  overflow-y: auto;
 }
 
 h1 {
@@ -252,14 +258,10 @@ h1 {
   text-align: center;
 }
 
-form {
-  display: contents;
-}
 .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
     cursor: pointer;
-    position: relative;
     overflow: hidden;
   }
   .avatar-uploader .el-upload:hover {
@@ -286,11 +288,26 @@ form {
 }
 
 .form-group {
+display: flex;
+justify-content: center;
   margin-bottom: 10px;
+  margin-left: 20px;
+}
+
+.photolabel{
+    margin-right:20px
+}
+.form-container{
+    align-items: flex-start;
+      display: flex;
+  flex-direction: column; /* 垂直排列子项 */
 }
 
 label {
+    width:15vh;
   display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
   margin-bottom: 5px;
 }
 
