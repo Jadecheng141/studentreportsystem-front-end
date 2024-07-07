@@ -1,10 +1,17 @@
 import request from '@/utils/request'
 import axios from 'axios';
 
-export function getlist() {
-  return axios.post('/api/manage/findStudents');
-}
+export function updateFeeStatus(studentId, state3) {
+  const formData = new FormData();
+  formData.append('id', studentId);
+  formData.append('state3', state3);
 
+  return axios.post('/api/manage/findStudents/state', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
 export function searchCourses(query) {
   const formData = new FormData();
   for (const key in query) {
@@ -13,10 +20,17 @@ export function searchCourses(query) {
     }
   }
   // Convert filled to boolean if it's not already
-  if (formData.has('filled')) {
-    formData.set('filled', formData.get('filled') === '1' ? 'true' : 'false');
-  }
   return axios.post('/api/manage/findStudents', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+export function getStudentDetails(studentId) {
+  const formData = new FormData();
+  formData.append('id', studentId);
+
+  return axios.post('/api/manage/findStudents/details', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

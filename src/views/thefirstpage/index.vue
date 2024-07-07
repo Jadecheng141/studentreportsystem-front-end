@@ -20,9 +20,11 @@
         {{ rectangle.title }}
       </button>
     </div>
+  <div>
     <img :src="staticImageUrl" alt="静态图片" class="static-image">
 
     <!-- 六个蓝色矩形部分 -->
+    <div>
     <div
       v-for="(rectangle, index) in singlerec"
       v-if="currentRectangle === rectangle.id"
@@ -45,7 +47,8 @@
         </p>
       </div>
     </div>
-
+</div>
+</div>
     <div
       v-for="(rectangle, index) in rectangles"
       v-if="currentRectangle === rectangle.id"
