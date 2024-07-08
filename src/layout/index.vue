@@ -23,14 +23,11 @@
                   首页
                 </el-dropdown-item>
               </router-link>
-              <a target="_blank" href="https://panjiachen.gitee.io/vue-element-admin-site/zh/">
+              <a target="_blank" href="https://github.com/Jadecheng141/studentreportsystem-front-end">
                 <el-dropdown-item>文档</el-dropdown-item>
               </a>
-              <a target="_blank" href="https://github.com/iimeepo/vue-admin-template">
+              <a target="_blank" href="https://github.com/Jadecheng141/studentreportsystem-front-end">
                 <el-dropdown-item>Github</el-dropdown-item>
-              </a>
-              <a target="_blank" href="https://gitee.com/iimeepo/vue-admin-template">
-                <el-dropdown-item>码云</el-dropdown-item>
               </a>
               <el-dropdown-item divided @click.native="logout">
                 <span style="display:block;">退出</span>

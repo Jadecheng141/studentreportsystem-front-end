@@ -182,7 +182,7 @@
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon" />
               </el-upload>
-              <!--              <el-dialog :visible.sync="dialogImageUrl" size="tiny">
+                          <el-dialog :visible.sync="dialogImageUrl" size="tiny">
                 <img :src="dialogImageUrl" alt="">
               </el-dialog> -->
             <!-- </el-form-item> -->

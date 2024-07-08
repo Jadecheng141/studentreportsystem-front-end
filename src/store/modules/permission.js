@@ -73,6 +73,8 @@ const actions = {
 //       })
 //     })
 //   },
+
+  // 获取路由
   generateRoutes({ commit }, role) {
     return new Promise((resolve, reject) => {
       let asyncRouterMap
@@ -90,6 +92,8 @@ const actions = {
       resolve(accessedRoutes)
     })
   },
+
+  // 重置路由
   resetPermissionState({ commit }) {
     commit('RESET_STATE')
   },

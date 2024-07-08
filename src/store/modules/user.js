@@ -44,7 +44,7 @@ const actions = {
         .then((response) => {
           console.log('登录response', response)
           if (response.data.status === 'success') {
-            sessionStorage.setItem('role', response.data.role)
+            sessionStorage.setItem('role', response.data.role)// 存储角色信息至sessionStorage
             sessionStorage.setItem('username', response.data.username)
             sessionStorage.setItem('avatar', response.data.url)
             sessionStorage.setItem('accountname', response.data.accountName)

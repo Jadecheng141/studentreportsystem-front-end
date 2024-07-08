@@ -149,18 +149,6 @@
               <el-input v-model="temp.temail" placeholder="请输入电子邮箱" :disabled="dialogType === '查看'" />
             </el-form-item>
             <el-form-item label="照片">
-              <!--  <el-upload
-                action="#"
-                list-type="picture-card"
-                :file-list="fileList"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :on-success="handleSuccess"
-                :before-upload="beforeUpload"
-                :disabled="dialogType === '查看'"
-              >
-                <i class="el-icon-plus" v-if="dialogType !== '查看'"></i>
-              </el-upload> -->
               <img :src="temp.figureUrl" alt="">
             </el-form-item>
           </el-col>

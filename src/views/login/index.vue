@@ -282,44 +282,16 @@ export default {
         this.$refs.password.focus()
       })
     },
-    // handleLogin() {
-    //   this.loading = true
-    //   const requestData = new URLSearchParams()
-    //   requestData.append('username', this.loginForm.username)
-    //   requestData.append('password', this.loginForm.password)
-    //   console.log('访问数据：', requestData)
-    //   // 调用后端接口验证登录
-    //   this.$axios.post('/login', requestData)
-    //     .then(response => {
-    //       // 后端返回验证结果
-    //       if (response.status === 200) {
-    //         console.log('登录成功')
-    //         // 登录成功
-    //         this.$store.dispatch('user/login', this.loginForm)
-    //           .then(() => {
-    //             this.$router.push({ path: this.redirect || '/' })
-    //             this.loading = false
-    //           })
-    //           .catch(() => {
-    //             this.loading = false
-    //           })
-    //       } else {
-    //       // 登录失败，处理错误逻辑
-    //         console.log('Login failed:', response.data.message)
-    //         this.loading = false
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.error('Login error:', error)
-    //       this.loading = false
-    //     })
-    // },
     handleLogin() {
       this.loading = true
       this.$store
         .dispatch('user/login', this.loginForm)
         .then(() => {
-          this.$message.success('登录成功')
+          this.$message({
+            message: '登录成功',
+            type: 'success',
+            duration: 3000 // 设置消息显示时间为 3 秒
+          })
           this.$router.push({ path: this.redirect || '/' })
           this.loading = false
         })
@@ -528,6 +500,8 @@ export default {
       if (this.signuppassporttimer) {
         clearInterval(this.signuppassporttimer)
       }
+      this.signuppassportremainingTime = 60
+      this.signuppassportbuttonText = '发送验证码'
       // 重置表单内容
       this.signupForm = {
         signupUsername: '',

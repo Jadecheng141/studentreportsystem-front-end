@@ -222,7 +222,7 @@ export default {
       this.temp = deepClone(scope.row)
       try {
         const response = await getStudentDetails(this.temp.roomno, this.temp.dormno, this.temp.areano)
-        this.studentDetails = response.data.data // Assuming the API returns an array of student details
+        this.studentDetails = response.data.data
         this.studentDialogVisible = true
       } catch (error) {
         console.error('Error fetching student details:', error)

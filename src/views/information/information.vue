@@ -4,96 +4,103 @@
       <div class="header">
         <h1>基本信息录入</h1>
       </div>
-      <div class="form-container">
-        <form @submit.prevent="submitForm">
-          <div class="photo-container">
-            <label class="photolabel" for="photo">照片:</label>
-            <el-upload
-              class="avatar-uploader"
-              action=" "
-              :http-request="uploadFile"
-              :show-file-list="false"
-            >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
-          </div>
-          <div class="form-group">
-            <label for="name">姓名:</label>
-            <input id="name" v-model="form.name" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="gender">性别:</label>
-            <select id="gender" v-model="form.gender" required>
-              <option value="male">男</option>
-              <option value="female">女</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="dob">出生日期:</label>
-            <input id="dob" v-model="form.dob" type="date" required>
-          </div>
-          <div class="form-group">
-            <label for="contact">联系方式:</label>
-            <input id="contact" v-model="form.contact" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="address">家庭住址:</label>
-            <input id="address" v-model="form.address" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="college">学院:</label>
-            <input id="college" v-model="form.college" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="class">班级:</label>
-            <input id="class" v-model="form.class" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="idCard">身份证号:</label>
-            <input id="idCard" v-model="form.idCard" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="email">邮箱:</label>
-            <input id="email" v-model="form.email" type="email" required>
-          </div>
 
-          <div class="form-group">
-            <label for="fatherName">父亲姓名:</label>
-            <input id="fatherName" v-model="form.fatherName" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="fatherContact">父亲联系电话:</label>
-            <input id="fatherContact" v-model="form.fatherContact" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="motherName">母亲姓名:</label>
-            <input id="motherName" v-model="form.motherName" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="motherContact">母亲联系电话:</label>
-            <input id="motherContact" v-model="form.motherContact" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="emergencyContactName">紧急联系人姓名:</label>
-            <input id="emergencyContactName" v-model="form.emergencyContactName" type="text" required>
-          </div>
-          <div class="form-group">
-            <label for="emergencyContactNumber">紧急联系人联系电话:</label>
-            <input id="emergencyContactNumber" v-model="form.emergencyContactNumber" type="text" required>
-          </div>
-          <div class="captchaForm-container">
-            <form class="captchaInput-container" @submit.prevent="submitInfo">
-              <input v-model="captchaInput" placeholder="输入验证码" required>
-            </form>
-            <div class="captcha-container">
-              <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha">
-              <button @click="refreshCaptcha">刷新验证码</button>
+      <form @submit.prevent="submitForm">
+        <div class="form-container">
+          <div class="left-column">
+            <div class="photo-container">
+              <label class="photolabel" for="photo">照片:</label>
+              <el-upload
+                class="avatar-uploader"
+                action=" "
+                :http-request="uploadFile"
+                :show-file-list="false"
+              >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
+
+            <div class="form-group">
+              <label for="name">姓名:</label>
+              <input id="name" v-model="form.name" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="gender">性别:</label>
+              <select id="gender" v-model="form.gender" required>
+                <option value="男">男</option>
+                <option value="女">女</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="dob">出生日期:</label>
+              <input id="dob" v-model="form.dob" type="date" required>
+            </div>
+            <div class="form-group">
+              <label for="contact">联系方式:</label>
+              <input id="contact" v-model="form.contact" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="address">家庭住址:</label>
+              <input id="address" v-model="form.address" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="college">学院:</label>
+              <input id="college" v-model="form.college" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="class">班级:</label>
+              <input id="class" v-model="form.class" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="idCard">身份证号:</label>
+              <input id="idCard" v-model="form.idCard" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="email">邮箱:</label>
+              <input id="email" v-model="form.email" type="email" required>
             </div>
           </div>
+
+          <div class="right-column">
+            <div class="form-group">
+              <label for="fatherName">父亲姓名:</label>
+              <input id="fatherName" v-model="form.fatherName" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="fatherContact">父亲联系电话:</label>
+              <input id="fatherContact" v-model="form.fatherContact" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="motherName">母亲姓名:</label>
+              <input id="motherName" v-model="form.motherName" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="motherContact">母亲联系电话:</label>
+              <input id="motherContact" v-model="form.motherContact" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="emergencyContactName">紧急联系人姓名:</label>
+              <input id="emergencyContactName" v-model="form.emergencyContactName" type="text" required>
+            </div>
+            <div class="form-group">
+              <label for="emergencyContactNumber">紧急联系人联系电话:</label>
+              <input id="emergencyContactNumber" v-model="form.emergencyContactNumber" type="text" required>
+            </div>
+            <div class="captchaForm-container">
+              <form class="captchaInput-container" @submit.prevent="submitInfo">
+                <input v-model="captchaInput" placeholder="输入验证码" required>
+              </form>
+              <div class="captcha-container">
+                <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha">
+                <button @click="refreshCaptcha">刷新验证码</button>
+              </div>
+            </div>
+          </div>
+
           <button type="submit" class="submit-button" @click="submitInfo">提交</button>
-        </form>
-      </div>
+        </div>
+      </form>
 
     </div>
   </div>
@@ -198,6 +205,7 @@ export default {
       formData.append('academy', this.form.college)
       formData.append('classNo', this.form.class)
       formData.append('idNumber', this.form.idCard)
+      formData.append('email', this.form.email)
       formData.append('fatherName', this.form.fatherName)
       formData.append('motherName', this.form.motherName)
       formData.append('emergencyContactName', this.form.emergencyContactName)
@@ -225,17 +233,6 @@ export default {
         this.$message.error('报道信息提交失败，请重试')
         return
       }
-    //   submitReportInfo(formData)
-    //     .then(response => {
-    //       if (response.data.code === 200) {
-    //         this.$message.success('上传报道信息成功')
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.error('上传报道信息失败:', error)
-    //       this.$message.error('上传报道信息失败')
-    //     })
-    }
 
   }
 }
@@ -252,7 +249,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 85vh;
   overflow: hidden; /* 禁止滚动 */
 }
 
@@ -302,6 +299,7 @@ h1 {
 
 .left-column,
 .right-column {
+  flex: 1; 
   display: flex;
   flex-direction: column;
 }
@@ -317,12 +315,12 @@ justify-content: center;
     margin-right:20px
 }
 .form-container{
-     border-radius: 10px; /* 设置四角圆角，值为 10px */
-    background-color: rgb(197, 199, 201);
+    border-radius: 10px; 
     padding-left: 50px;
- align-items: flex-start;
-  display: flex;
-  flex-direction: column; /* 垂直排列子项 */
+    justify-content: space-between;
+    display: flex;
+    gap: 20px; /* 调整列间距 */
+
 }
 
 label {
@@ -339,8 +337,19 @@ select {
   padding: 8px;
   box-sizing: border-box;
   margin-left: 30px;
+  height: 40px;
 }
 
+.captchaForm-container{
+    display: flex;
+    padding-left: 0px;
+}
+.captchaInput-container{
+    margin-right: 20px;
+    display: flex;
+    width:200px;
+    padding-left: 0px;
+}
 .submit-button {
   padding: 10px;
   background-color: dodgerblue;

@@ -36,7 +36,7 @@ export default {
   components: { Item, AppLink },
   mixins: [FixiOSBug],
   props: {
-    // route object
+    // 路由
     item: {
       type: Object,
       required: true
@@ -62,18 +62,17 @@ export default {
         if (item.hidden) {
           return false
         } else {
-          // Temp set(will be used if only has one showing child)
           this.onlyOneChild = item
           return true
         }
       })
 
-      // When there is only one child router, the child router is displayed by default
+      // 如果只有一个子路由将其设置为默认展示
       if (showingChildren.length === 1) {
         return true
       }
 
-      // Show parent if there are no child router to display
+      // 若果没有子路由
       if (showingChildren.length === 0) {
         this.onlyOneChild = { ... parent, path: '', noShowingChildren: true }
         return true

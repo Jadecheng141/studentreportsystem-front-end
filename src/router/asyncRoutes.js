@@ -180,19 +180,6 @@ export const asyncRoutes = {
       ]
     },
     {
-      path: '/site',
-      component: 'Layout',
-      alwaysShow: true,
-      children: [
-        {
-          path: '/site/index',
-          name: 'Site',
-          component: 'views/site/teacher_dialogue',
-          meta: { title: '在线咨询', icon: 'el-icon-setting' }
-        }
-      ]
-    },
-    {
       path: '/setting',
       component: 'Layout',
       alwaysShow: true,

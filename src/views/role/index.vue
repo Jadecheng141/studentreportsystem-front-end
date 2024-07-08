@@ -1,14 +1,14 @@
 <template>
-  <el-container>
+  <el-container class="content-container">
     <!-- 侧边栏 -->
     <el-aside width="500px" class="aside">
       <el-card class="box-card">
-        <div slot="header" class="clearfix">
+        <div slot="header" class="fix">
           <span>选中的信息</span>
         </div>
         <el-table
           :data="savedRows"
-          style="width: 100%"
+          style="width: 100% height:100%"
         >
           <el-table-column
             prop="courseId"
@@ -38,7 +38,7 @@
     <el-container>
       <el-header class="header">
         <div class="button">
-          <el-link :underline="false" href="http://localhost:9529/#/setting/menu" target="_blank" class="mytable">我的课表</el-link>
+          选课
         </div>
       </el-header>
       <el-main class="main">
@@ -104,6 +104,13 @@
             width="200"
           />
         </el-table>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="currentPage"
+          :limit.sync="pageSize"
+          @pagination="fetchTableData"
+        />
         <div class="button-group">
           <el-button @click="saveSelection()">确定选择</el-button>
           <el-button @click="toggleSelection()">取消选择</el-button>
@@ -114,26 +121,36 @@
 </template>
 
 <script>
+import Pagination from '@/components/Pagination'
 import { getCourses, getSelectedCourses, saveSelectedCourses, deleteCourse } from '@/api/selectcourse'
 
 export default {
+  components: {
+    Pagination
+  },
   data() {
     return {
       tableData: [],
       multipleSelection: [],
-      savedRows: []
+      savedRows: [],
+      currentPage: 1,
+      pageSize: 10,
+      total: 0
     }
   },
   mounted() {
-    this.fetchTableData() // 组件挂载时获取数据
-    this.loadSavedRows()
+    this.fetchTableData() // 获取选课信息
+    this.loadSavedRows() // 获取目前已选课程状态
   },
   methods: {
     async fetchTableData() {
       try {
-        const response = await getCourses()
-        this.tableData = response.data
-        console.log('response:', response.data)
+        const formData = new FormData()
+        formData.append('currentPage', this.currentPage)
+        formData.append('pageSize', this.pageSize)
+        const response = await getCourses(formData)
+        this.tableData = response.data.courses
+        this.total = response.data.total
         this.syncTableSelection() // 同步保存的行与表格选择状态
       } catch (error) {
         console.error('获取表格数据出错:', error)
@@ -157,9 +174,11 @@ export default {
         this.$refs.multipleTable.clearSelection()
       }
     },
+    // 获取勾选状态
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
+    // 提交选课
     async saveSelection() {
       try {
         const selectedCourseIds = this.multipleSelection.map(row => row.courseId)
@@ -175,9 +194,11 @@ export default {
         console.error('保存选中的课程出错:', error)
       }
     },
+
+    // 删除选课
     async removeSavedRow(index, row) {
       try {
-        await deleteCourse(row.courseId)
+        await deleteCourse(row.courseId)// 向后端提交删除
         this.savedRows.splice(index, 1)
         this.storeSavedRows() // 更新本地存储
         this.$refs.multipleTable.toggleRowSelection(row, false)
@@ -185,6 +206,7 @@ export default {
         console.error('删除选中的课程出错:', error)
       }
     },
+
     isRowSaved(row) {
       return this.savedRows.some(savedRow => savedRow.courseId === row.courseId)
     },
@@ -203,8 +225,19 @@ export default {
 </script>
 
 <style>
+.fix {
+  height: 20px; /* 设置父容器高度 */
+  display: flex; /* 使用 flex 布局 */
+  align-items: center; /* 垂直居中 */
+}
+.fix > span {
+  margin-left: 0; /* 确保 span 在父容器左边 */
+  padding-left: 10px; /* 如果需要可以添加一些左边距 */
+}
 .el-container {
   font-family: Arial, sans-serif;
+  height: 90vh;
+  overflow-y: auto;
 }
 .mytable {
   top: -20px;
@@ -237,6 +270,11 @@ export default {
   margin-left: 450px;
   height: 40px;
   margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: darkblue; /* 设置文字颜色 */
+  font-weight: bold; /* 可选：设置字体加粗 */
 }
 
 .saved-row {

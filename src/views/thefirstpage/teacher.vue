@@ -172,6 +172,7 @@ export default {
         const temp = response.data.TodayCount
         const firstKey = Object.keys(temp)[0] // 获取第一个键
         this.predict_data = response.data.TodaypredictCount.predicted_count
+        console.info('预计', this.predict_data)
         this.todayCount = temp[firstKey]
         this.chinaMapFun() // 获取数据后初始化地图
         // this.initEcharts_dormitory(); // 初始化柱状图
@@ -525,7 +526,7 @@ export default {
       this.lowestArrivalRateInstitutes.sort((a, b) => a.arrival_rate - b.arrival_rate)
       console.info('最小', this.lowestArrivalRateInstitutes)
       this.low_inst = this.lowestArrivalRateInstitutes.map(item => item.Ins_name)
-      this.low_rate = this.lowestArrivalRateInstitutes.map(item => item.arrival_rate.toFixed(3) * 100)
+      this.low_rate = this.lowestArrivalRateInstitutes.map(item => item.arrival_rate.toFixed(4) * 100)
       console.info('最小', this.low_inst)
       console.info('最小', this.lowe_rate)
     },
@@ -537,8 +538,8 @@ export default {
 
       // 准备图表数据
       const chartData = courses.map(course => ({
-        value: course.enrollmentRate * 100, // 转换为百分比
-        name: `${course.courseName} (${course.courseId})`
+        value: course.enrollmentRate.toFixed(3) * 100, // 转换为百分比
+        name: course.courseName
       }))
 
       const chart = echarts.init(document.getElementById('mychart7'))
@@ -546,6 +547,12 @@ export default {
         title: {
           text: '课程选课率',
           left: 'center'
+        },
+        grid: {
+          top: '10%', // 调整上边距
+          bottom: '10%', // 调整下边距
+          left: '20%', // 调整左边距
+          right: '20%' // 调整右边距
         },
         tooltip: {
           trigger: 'item',
@@ -570,7 +577,7 @@ export default {
               formatter: '{c}%' // 显示百分比
             },
             itemStyle: {
-              color: '#33BEFF'
+              color: '#087D9F'
             }
           }
         ]
@@ -950,7 +957,10 @@ export default {
   border: 2px solid #000;
   align-items:flex-start;
   flex-direction: column;
-
+  white-space: nowrap; /* 防止换行 */
+  overflow: hidden; /* 隐藏溢出的内容 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
 }
 .text_3{
   padding: 5px;

@@ -51,40 +51,6 @@
             width="55"
           />
         </el-table>
-        <!-- <table>
-          <thead>
-            <tr>
-              <th>园区</th>
-              <th>楼栋</th>
-              <th>宿舍号</th>
-              <th>学院</th>
-              <th>入住情况</th>
-              <th>查看信息</th>
-              <th>选择入住</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(dorm, index) in dorms" :key="index" @click="selectDorm(index)">
-              <td>{{ dorm.areano }}</td>
-              <td>{{ dorm.dormno }}</td>
-              <td>{{ dorm.roomno }}</td>
-              <td>{{ dorm.academy }}</td>
-              <td>
-                <span :class="{'status-dot': true, 'available': dorm.isFull, 'full': !dorm.isFull}" />
-              </td>
-              <td><a href="#" class="view-link" @click.prevent="viewInfo(dorm)">查看</a></td>
-              <td>
-                <input
-                  type="checkbox"
-                  :disabled="dorm.isFull "
-                  :checked="selectedDormIndex === index"
-                  @change="toggleSelectDorm(index)"
-                >
-                <span v-if="dorm.isFull && selectedDormId !== dorm.id">已住满</span>
-              </td>
-            </tr>
-          </tbody>
-        </table> -->
 
       </div>
       <div class="buttoncontainer">
@@ -115,10 +81,6 @@
             label="学院"
           />
           <el-table-column
-            prop="major"
-            label="专业"
-          />
-          <el-table-column
             prop="classNo"
             label="班级"
           />
@@ -146,8 +108,13 @@ export default {
     async fetchDormData() {
       getDormselectinfo()
         .then(response => {
-          console.log('Dormselectinfo:', response.data.data)
-          this.dorms = response.data.data
+          console.log('dormresponse:', response)
+          if (response.data.code === '200') {
+            console.log('Dormselectinfo:', response.data.data)
+            this.dorms = response.data.data
+          } else {
+            this.$message.error('学生已有宿舍')
+          }
         })
         .catch(error => {
           console.error('获取宿舍信息失败:', error)

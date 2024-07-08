@@ -88,7 +88,7 @@ export default {
     activeSubMenu() {
       const route = this.$route
       const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
+      // 高亮选中
       if (meta.activeMenu) {
         return meta.activeMenu
       }

@@ -10,8 +10,8 @@
         clearable
         class="filter-item"
       >
-        <el-option label="可选" :value="'已开始'" />
-        <el-option label="不可选" :value="'未开始'" />
+        <el-option label="已开始" :value="'已开始'" />
+        <el-option label="未开始" :value="'未开始'" />
       </el-select>
 
       <!-- Filled Select -->
@@ -32,18 +32,18 @@
           v-for="item in options_academy"
           :key="item.value"
           :label="item.label"
-          :value="item.value">
-        </el-option>
+          :value="item.value"
+        />
       </el-select>
 
       <!-- Teacher Name Autocomplete -->
       <el-autocomplete
+        v-model="listQuery.teacherName"
         class="inline-input"
         size="small"
-        v-model="listQuery.teacherName"
         :fetch-suggestions="querySearch"
         placeholder="课程负责人"
-      ></el-autocomplete>
+      />
 
       <!-- Score Select -->
       <el-select v-model="listQuery.score" size="small" placeholder="学分" class="filter-item">
@@ -51,8 +51,8 @@
           v-for="item in options_score"
           :key="item.value"
           :label="item.label"
-          :value="item.value">
-        </el-option>
+          :value="item.value"
+        />
       </el-select>
 
       <!-- Time Select -->
@@ -61,8 +61,8 @@
           v-for="item in options_time"
           :key="item.value"
           :label="item.label"
-          :value="item.value">
-        </el-option>
+          :value="item.value"
+        />
       </el-select>
 
       <!-- Search Button -->
@@ -198,7 +198,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span :class="{'status-label': true, 'available': scope.row.status === '已开始', 'not-available': scope.row.status === '未开始'}">
+          <span :class="{'status-label': true, 'available': scope.row.status === '已开始', 'not-available': scope.row.status === '未开始'||scope.row.status === '已结束'}">
             {{ scope.row.status === '已开始' ? '可选' : '不可选' }}
           </span>
         </template>
@@ -216,6 +216,13 @@
         </template>
       </el-table-column>
     </el-table>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="currentPage"
+      :limit.sync="pageSize"
+      @pagination="fetchData"
+    />
 
     <!-- Course Detail Dialog -->
     <el-dialog
@@ -229,22 +236,22 @@
         label-position="right"
       >
         <el-form-item label="课程编号">
-          <el-input v-model="temp.courseId" placeholder="请输入课程编号" disabled/>
+          <el-input v-model="temp.courseId" placeholder="请输入课程编号" disabled />
         </el-form-item>
         <el-form-item label="课程名称">
-          <el-input v-model="temp.courseName" placeholder="请输入课程名称" disabled/>
+          <el-input v-model="temp.courseName" placeholder="请输入课程名称" disabled />
         </el-form-item>
         <el-form-item label="开课部门">
-          <el-input v-model="temp.institution" placeholder="请输入开课部门" disabled/>
+          <el-input v-model="temp.institution" placeholder="请输入开课部门" disabled />
         </el-form-item>
         <el-form-item label="开课学期">
-          <el-input v-model="temp.semester" placeholder="请输入开课学期" disabled/>
+          <el-input v-model="temp.semester" placeholder="请输入开课学期" disabled />
         </el-form-item>
         <el-form-item label="学分">
-          <el-input v-model="temp.score" placeholder="请输入学分" disabled/>
+          <el-input v-model="temp.score" placeholder="请输入学分" disabled />
         </el-form-item>
         <el-form-item label="课程描述">
-          <el-input v-model="temp.introduction" placeholder="请输入课程描述" disabled/>
+          <el-input v-model="temp.introduction" placeholder="请输入课程描述" disabled />
         </el-form-item>
       </el-form>
       <div class="text-right">
@@ -258,7 +265,6 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { deepClone } from '@/utils'
 import { getlist, searchCourses, detailCourses } from '@/api/s_check_course'
 
 const _temp = {
@@ -267,10 +273,10 @@ const _temp = {
   institution: '',
   status: '',
   teacherName: '',
-  time:'',
+  time: '',
   score: '',
-  semister:'',
-  courseType:'',
+  semister: '',
+  courseType: '',
   filled: null,
   introduction: ''
 }
@@ -309,14 +315,14 @@ export default {
       ],
       listQuery: {
         courseId: '',
-        courseName: '' ,
+        courseName: '',
         institution: '',
         status: '',
         teacherName: '',
-        time:'',
+        time: '',
         score: '',
-        semister:'',
-        courseType:'',
+        semister: '',
+        courseType: '',
         filled: null
       },
       total: 0,
@@ -326,25 +332,33 @@ export default {
       dialogVisible: false,
       dialogType: 'create',
       temp: Object.assign({}, _temp),
-      loading: false
+      loading: false,
+      currentPage: 1,
+      pageSize: 10
     }
   },
   created() {
     this.fetchData()
   },
+  mounted() {
+    this.people = this.loadAll()
+  },
   methods: {
     async fetchData() {
-      this.listLoading = true;
+      this.listLoading = true
       try {
-        const response = await getlist();
-        console.log('Fetched Data:', response.data); // 打印返回的数据
-        this.list = response.data;
-        this.filteredList = this.list;
-        this.total = response.data.total;
+        const formData = new FormData()
+        formData.append('currentPage', this.currentPage)
+        formData.append('pageSize', this.pageSize)
+        const response = await getlist(formData)
+        console.log('Fetched Data:', response.data) // 打印返回的数据
+        this.list = response.data.courses
+        this.filteredList = this.list
+        this.total = response.data.total
       } catch (error) {
-        console.error('Error fetching course list:', error);
+        console.error('Error fetching course list:', error)
       } finally {
-        this.listLoading = false;
+        this.listLoading = false
       }
     },
     resetTemp() {
@@ -358,12 +372,12 @@ export default {
     async view(scope) {
       // 调用 detailCourses 函数并处理返回的数据
       try {
-        const response = await detailCourses(scope.row.courseId);
-        this.temp = response.data;
-        this.dialogType = '查看';
-        this.dialogVisible = true;
+        const response = await detailCourses(scope.row.courseId)
+        this.temp = response.data
+        this.dialogType = '查看'
+        this.dialogVisible = true
       } catch (error) {
-        console.error('Failed to fetch course details:', error);
+        console.error('Failed to fetch course details:', error)
       }
     },
     async search() {
@@ -376,24 +390,37 @@ export default {
         institution: '',
         status: '',
         teacherName: '',
-        time:'',
+        time: '',
         score: '',
-        semister:'',
-        courseType:'',
+        semister: '',
+        courseType: '',
         filled: null
       }
       await this.fetchData()
     },
     async fetchFilteredData() {
-      this.listLoading = true;
+      this.listLoading = true
       try {
-        const response = await searchCourses(this.listQuery);
-        this.filteredList = response.data;
-        this.total = response.data.total;
+        const formData = new FormData()
+        for (const key in this.listQuery) {
+          if (Object.prototype.hasOwnProperty.call(this.listQuery, key)) {
+            formData.append(key, this.listQuery[key])
+          }
+        }
+        // Convert filled to boolean if it's not already
+        if (formData.has('filled')) {
+          formData.set('filled', formData.get('filled') === 'true')
+        }
+        formData.append('currentPage', this.currentPage)
+        formData.append('pageSize', this.pageSize)
+
+        const response = await searchCourses(formData)
+        this.filteredList = response.data.courses
+        this.total = response.data.total
       } catch (error) {
-        console.error('Failed to fetch filtered data:', error);
+        console.error('Failed to fetch filtered data:', error)
       } finally {
-        this.listLoading = false;
+        this.listLoading = false
       }
     },
     querySearch(queryString, cb) {
@@ -402,9 +429,6 @@ export default {
       })
       cb(results)
     }
-  },
-  mounted() {
-    this.people = this.loadAll();
   }
 }
 </script>

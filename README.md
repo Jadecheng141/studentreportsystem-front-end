@@ -13,7 +13,6 @@ vue2 <https://v2.cn.vuejs.org/>
 Element-Ui <https://element.eleme.cn/#/zh-CN>
 ECharts <https://echarts.apache.org/zh/index.html>
 Axios <http://www.axios-js.com/zh-cn/docs/>
-js-cookie <https://github.com/js-cookie/js-cookie/tree/latest#readme>
 Nprogress <https://github.com/rstacruz/nprogress> //加载虚假进度条
 vue-router3 <https://v3.router.vuejs.org/zh/> //路由管理
 

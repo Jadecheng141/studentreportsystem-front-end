@@ -11,13 +11,13 @@ const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
   console.log('访问页面：', to.path)
-  // start progress bar
+  // 开始页面进度条
   NProgress.start()
 
-  // set page title
+  // 获取页面标题
   document.title = getPageTitle(to.meta.title)
 
-  const role = sessionStorage.getItem('role')
+  const role = sessionStorage.getItem('role')// 获取存储的角色信息
   const hasRole = role !== null
 
   if (hasRole) {
